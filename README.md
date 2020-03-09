@@ -15,20 +15,22 @@ class Tesselator
 };
 
 # Exsample:
-
+<code>
 struct vec2f  
 {  
     float x, y;  
 };  
   
+//tesselate polygons
 libtess::Tesselator tess;  
 tess.init();  
 
 std::vector<Vec2> points;  
 tess.AddContour( 2, &points[0], sizeof(Vec2), points.size() );  
+//tess.AddContour( ... );  
 tess.Tesselate( libtess::TESS_WINDING_ODD, libtess::TESS_POLYGONS );  
   
-# OpenGL drawing:
+//OpenGL drawing:
 
 void draw_elements(int shape, const vec2f* vs, const int* indices, int size)  
 {  
@@ -40,3 +42,4 @@ void draw_elements(int shape, const vec2f* vs, const int* indices, int size)
 
 
 draw_elements(CGL_TRIANGLES, &tess.vertices[0], &tess.indices[0], tess.indices.size());
+</code>
