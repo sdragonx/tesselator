@@ -15,7 +15,7 @@ class Tesselator
 };
 
 # Exsample:
-<code>
+<pre><code>
 struct vec2f  
 {  
     float x, y;  
@@ -42,4 +42,4 @@ void draw_elements(int shape, const vec2f* vs, const int* indices, int size)
 
 
 draw_elements(CGL_TRIANGLES, &tess.vertices[0], &tess.indices[0], tess.indices.size());
-</code>
+</code></pre>
