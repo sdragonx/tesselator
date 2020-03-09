@@ -18,7 +18,7 @@ class Tesselator
 
 struct vec2f  
 {  
-  float x, y;  
+    float x, y;  
 };  
   
 libtess::Tesselator tess;  
