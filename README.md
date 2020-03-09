@@ -1,19 +1,19 @@
 # libtess
-libtess c++ version.(no cpp11)
 
-gluTesselation C++ version。
+this is refactored version of the original libtess which comes with the GLU reference implementation.  
+this is C++ version(c++98).  
 
-main class:
+# main class:
 
-class Tesselator
-{
-  int init();
-  void dispose();
-  int AddContour( int size, const void* pointer, int stride, int count );
-  int Tesselate( TessWindingRule windingRule, TessElementType elementType, int polySize = 3);
+class Tesselator  
+{  
+  int init();  
+  void dispose();  
+  int AddContour( int size, const void* pointer, int stride, int count );  
+  int Tesselate( TessWindingRule windingRule, TessElementType elementType, int polySize = 3);  
 };
 
-exsample:
+# Exsample:
 
 struct vec2f
 {
@@ -27,7 +27,7 @@ std::vector<Vec2> points;
 tess.AddContour( 2, &points[0], sizeof(Vec2), points.size() );
 tess.Tesselate( libtess::TESS_WINDING_ODD, libtess::TESS_POLYGONS );
 
-OpenGL drawing:
+# OpenGL drawing:
 
 void draw_elements(int shape, const vec2f* vs, const int* indices, int size)
 {
