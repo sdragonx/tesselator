@@ -58,3 +58,9 @@ void draw_elements(int shape, const vec2f* vs, const int* indices, int size)
 }  
 draw_elements(CGL_TRIANGLES, &tess.vertices[0], &tess.indices[0], tess.indices.size());
 </code></pre>
+
+TESS_TRIANGLES执行结果:  
+![TESS_TRIANGLES执行结果](https://github.com/sdragonx/libtess/blob/master/TRIANGLES.png)
+TESS_BOUNDARY_CONTOURS执行结果:  
+![TESS_BOUNDARY_CONTOURS执行结果](https://github.com/sdragonx/libtess/blob/master/BOUNDARY_CONTOURS.png)
+
