@@ -157,7 +157,7 @@ void Sweep::DeleteRegion( ActiveRegion *reg )
  * Replace an upper edge which needs fixing (see ConnectRightVertex).
  * 更换需要修复的上边缘（请参见ConnectRightVertex）。
  */
-int FixUpperEdge( TESSmesh& mesh, ActiveRegion *reg, HalfEdge *newEdge )
+int FixUpperEdge( Mesh& mesh, ActiveRegion *reg, HalfEdge *newEdge )
 {
     assert( reg->fixUpperEdge );
     if ( !mesh.DeleteEdge( reg->eUp ) ) return 0;
@@ -168,7 +168,7 @@ int FixUpperEdge( TESSmesh& mesh, ActiveRegion *reg, HalfEdge *newEdge )
     return 1; 
 }
 
-static ActiveRegion *TopLeftRegion( TESSmesh& mesh, ActiveRegion *reg )
+static ActiveRegion *TopLeftRegion( Mesh& mesh, ActiveRegion *reg )
 {
     Vertex *org = reg->eUp->vertex;
     HalfEdge *e;
@@ -300,7 +300,7 @@ void Sweep::FinishRegion( ActiveRegion *r )
  * 漫游在regLast上的区域停止；如果regLast为空，我们将尽可能地漫游。
  * 同时，如果需要，我们将重新链接网格，以便vOrg周围的边的顺序与字典中的相同。
  */
-HalfEdge* Sweep::FinishLeftRegions( TESSmesh& mesh, ActiveRegion *regFirst, ActiveRegion *regLast )
+HalfEdge* Sweep::FinishLeftRegions( Mesh& mesh, ActiveRegion *regFirst, ActiveRegion *regLast )
 {
     ActiveRegion *reg, *regPrev;
     HalfEdge *e, *ePrev;
@@ -359,7 +359,7 @@ HalfEdge* Sweep::FinishLeftRegions( TESSmesh& mesh, ActiveRegion *regFirst, Acti
  * 将包含在eTopLeft->Oprev和eTopLeft之间；否则eTopLeft应该为空。
  */
 void Sweep::AddRightEdges(
-    TESSmesh& mesh,
+    Mesh& mesh,
     ActiveRegion *regUp,
     HalfEdge *eFirst,
     HalfEdge *eLast,
@@ -510,7 +510,7 @@ void Sweep::GetIntersectData( Vertex *isect, Vertex *orgUp, Vertex *dstUp, Verte
  * 这是一个有保证的解决方案，不管事情变得多么糟糕。
  * 基本上这是一个数值问题的组合解。
  */
-int Sweep::CheckForRightSplice( TESSmesh& mesh, ActiveRegion *regUp )
+int Sweep::CheckForRightSplice( Mesh& mesh, ActiveRegion *regUp )
 {
     ActiveRegion *regLo = RegionBelow(regUp);
     HalfEdge *eUp = regUp->eUp;
@@ -588,7 +588,7 @@ int Sweep::CheckForRightSplice( TESSmesh& mesh, ActiveRegion *regUp )
  *
  * 我们只需将有问题的顶点拼接到另一条边上就可以解决这个问题。
  */
-int Sweep::CheckForLeftSplice( TESSmesh& mesh, ActiveRegion *regUp )
+int Sweep::CheckForLeftSplice( Mesh& mesh, ActiveRegion *regUp )
 {
     ActiveRegion *regLo = RegionBelow(regUp);
     HalfEdge *eUp = regUp->eUp;
@@ -642,7 +642,7 @@ int Sweep::CheckForLeftSplice( TESSmesh& mesh, ActiveRegion *regUp )
  * 在这种情况下，已检查所有“脏”区域的交集，
  * 并且可能已删除regUp。
  */
-int Sweep::CheckForIntersect( TESSmesh& mesh, ActiveRegion *regUp )
+int Sweep::CheckForIntersect( Mesh& mesh, ActiveRegion *regUp )
 {
     ActiveRegion *regLo = RegionBelow(regUp);
     HalfEdge *eUp = regUp->eUp;
@@ -801,7 +801,7 @@ int Sweep::CheckForIntersect( TESSmesh& mesh, ActiveRegion *regUp )
  * 此例程遍历所有脏区域，并确保满足字典不变量的要求（请参阅此文件开头的注释）。
  * 当然，当我们进行更改以恢复不变量时，可以创建新的脏区域。
  */
-void Sweep::WalkDirtyRegions( TESSmesh& mesh, ActiveRegion *regUp )
+void Sweep::WalkDirtyRegions( Mesh& mesh, ActiveRegion *regUp )
 {
     ActiveRegion *regLo = RegionBelow(regUp);
     HalfEdge *eUp, *eLo;
@@ -912,7 +912,7 @@ void Sweep::WalkDirtyRegions( TESSmesh& mesh, ActiveRegion *regUp )
  * Quite possibly the vertex we connected to will turn out to be the
  * closest one, in which case we won''t need to make any changes.
  */
-void Sweep::ConnectRightVertex( TESSmesh& mesh, ActiveRegion *regUp, HalfEdge *eBottomLeft )
+void Sweep::ConnectRightVertex( Mesh& mesh, ActiveRegion *regUp, HalfEdge *eBottomLeft )
 {
     HalfEdge *eNew;
     HalfEdge *eTopLeft = eBottomLeft->Onext;
@@ -980,7 +980,7 @@ void Sweep::ConnectRightVertex( TESSmesh& mesh, ActiveRegion *regUp, HalfEdge *e
  * Adding the new vertex involves splicing it into the already-processed
  * part of the mesh.
  */
-void Sweep::ConnectLeftDegenerate( TESSmesh& mesh, ActiveRegion *regUp, Vertex *vEvent )
+void Sweep::ConnectLeftDegenerate( Mesh& mesh, ActiveRegion *regUp, Vertex *vEvent )
 {
     HalfEdge *e, *eTopLeft, *eTopRight, *eLast;
     ActiveRegion *reg;
@@ -1048,7 +1048,7 @@ void Sweep::ConnectLeftDegenerate( TESSmesh& mesh, ActiveRegion *regUp, Vertex *
  *	- merging with the active edge of U or L
  *	- merging with an already-processed portion of U or L
  */
-void Sweep::ConnectLeftVertex( TESSmesh& mesh, Vertex *vEvent )
+void Sweep::ConnectLeftVertex( Mesh& mesh, Vertex *vEvent )
 {
     ActiveRegion *regUp, *regLo, *reg;
     HalfEdge *eUp, *eLo, *eNew;
@@ -1113,7 +1113,7 @@ void Sweep::ConnectLeftVertex( TESSmesh& mesh, Vertex *vEvent )
  * 当扫描线穿过顶点时执行所有必要的操作。
  * 更新模型和边字典。
  */
-void Sweep::SweepEvent( TESSmesh& mesh, Vertex *vEvent )
+void Sweep::SweepEvent( Mesh& mesh, Vertex *vEvent )
 {
     ActiveRegion *regUp, *reg;
     HalfEdge *e, *eTopLeft, *eBottomLeft;
@@ -1170,7 +1170,7 @@ void Sweep::SweepEvent( TESSmesh& mesh, Vertex *vEvent )
  * We add two sentinel edges above and below all other edges,
  * to avoid special cases at the top and bottom.
  */
-void Sweep::AddSentinel( TESSmesh& mesh, Float smin, Float smax, Float t )
+void Sweep::AddSentinel( Mesh& mesh, Float smin, Float smax, Float t )
 {
     HalfEdge *e;
     ActiveRegion *reg = this->allocate();
@@ -1200,7 +1200,7 @@ void Sweep::AddSentinel( TESSmesh& mesh, Float smin, Float smax, Float t )
  * This order is maintained in a dynamic dictionary.
  */
 //初始化词典
-void Sweep::InitEdgeDict( TESSmesh& mesh, const AABB& aabb )
+void Sweep::InitEdgeDict( Mesh& mesh, const AABB& aabb )
 {
     Float w, h;
     Float smin, smax, tmin, tmax;
@@ -1255,7 +1255,7 @@ void Sweep::DoneEdgeDict()
 /*
  * Remove zero-length edges, and contours with fewer than 3 vertices.
  */
-void Sweep::RemoveDegenerateEdges( TESSmesh& mesh )
+void Sweep::RemoveDegenerateEdges( Mesh& mesh )
 {
     HalfEdge *e, *eNext, *eLnext;
     HalfEdge *eHead = &mesh.m_edgeHead;
@@ -1290,7 +1290,7 @@ void Sweep::RemoveDegenerateEdges( TESSmesh& mesh )
  * Insert all vertices into the priority queue which determines the
  * order in which vertices cross the sweep line.
  */
-int Sweep::InitPriorityQ( TESSmesh& mesh )
+int Sweep::InitPriorityQ( Mesh& mesh )
 {
     #if 0
     PriorityQ *pq;
@@ -1360,7 +1360,7 @@ void Sweep::DonePriorityQ()
  * edge at the time, since one of the routines further up the stack
  * will sometimes be keeping a pointer to that edge.
  */
-bool Sweep::RemoveDegenerateFaces( TESSmesh& mesh )
+bool Sweep::RemoveDegenerateFaces( Mesh& mesh )
 {
     Face *f, *fNext;
     HalfEdge *e;
@@ -1387,7 +1387,7 @@ bool Sweep::RemoveDegenerateFaces( TESSmesh& mesh )
  * to the polygon, according to the rule given by tess->windingRule.
  * Each interior region is guaranteed be monotone.
  */
-int Sweep::ComputeInterior( TESSmesh& mesh, const AABB& aabb )
+int Sweep::ComputeInterior( Mesh& mesh, const AABB& aabb )
 {
     Vertex *v, *vNext;
 
@@ -1409,9 +1409,8 @@ int Sweep::ComputeInterior( TESSmesh& mesh, const AABB& aabb )
         return LIBTESS_ERROR;
     }
 
-    LIBTESS_LOG("sort begin");
-
-    int t = std::clock();
+    //LIBTESS_LOG("sort begin");
+    //int t = std::clock();
 
     #if 0
     //while( (v = (Vertex *)pqExtractMin( tess->pq )) != NULL ) {
@@ -1460,7 +1459,7 @@ int Sweep::ComputeInterior( TESSmesh& mesh, const AABB& aabb )
         v = pq.pop();
     };
 
-    LIBTESS_LOG("sort time : %i", std::clock() - t);
+    //LIBTESS_LOG("sort time : %i", std::clock() - t);
 
     /* Set tess->event for debugging purposes */
     currentEvent = ((ActiveRegion *) dictKey( dict.min() ))->eUp->vertex;

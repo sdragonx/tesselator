@@ -35,6 +35,8 @@
 #ifndef LIBTESS_NORMAL_HPP
 #define LIBTESS_NORMAL_HPP
 
+namespace libtess{
+
 Vec3 Tesselator::ComputeNormal()
 {
     Vertex *v, *v1, *v2;
@@ -255,5 +257,7 @@ void Tesselator::ProjectPolygon()
     }
     */
 }
+
+}// end namespace libtess
 
 #endif //LIBTESS_NORMAL_HPP

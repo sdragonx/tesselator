@@ -35,6 +35,7 @@
 #ifndef LIBTESS_MONO_HPP
 #define LIBTESS_MONO_HPP
 
+#include "geometry.hpp"
 #include "mesh.hpp"
 
 namespace libtess{
@@ -77,7 +78,7 @@ void AddWinding(HalfEdge* eDst, HalfEdge* eSrc)
  * to the fan is a simple orientation test.  By making the fan as large
  * as possible, we restore the invariant (check it yourself).
  */
-int TessellateMonoRegion( TESSmesh *mesh, Face *face )
+int TessellateMonoRegion( Mesh *mesh, Face *face )
 {
     HalfEdge *up, *lo;
 
@@ -145,7 +146,7 @@ int TessellateMonoRegion( TESSmesh *mesh, Face *face )
  * must be monotone.
  * 细分网格中标记为多边形“内部”的每个区域。每个这样的区域必须是单调的(多边形)。
  */
-int TessellateInterior( TESSmesh *mesh )
+int TessellateInterior( Mesh *mesh )
 {
     Face *f, *next;
 
@@ -192,7 +193,7 @@ void DiscardExterior( TESSmesh *mesh )
  * If keepOnlyBoundary is TRUE, it also deletes all edges which do not
  * separate an interior region from an exterior one.
  */
-int SetWindingNumber( TESSmesh *mesh, int value, int keepOnlyBoundary )
+int SetWindingNumber( Mesh *mesh, int value, int keepOnlyBoundary )
 {
     HalfEdge *e, *eNext;
 

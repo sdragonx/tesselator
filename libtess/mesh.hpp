@@ -162,10 +162,10 @@ struct Face {
 
 struct HalfEdge {
     HalfEdge *next;      /* doubly-linked list (prev==Sym->next) */
-    HalfEdge *mirror;       /* same edge, opposite direction */
+    HalfEdge *mirror;    /* same edge, opposite direction */
     HalfEdge *Onext;     /* next edge CCW around origin */
     HalfEdge *Lnext;     /* next edge CCW around left face */
-    Vertex   *vertex;       /* origin vertex (Overtex too long) */
+    Vertex   *vertex;    /* origin vertex (Overtex too long) */
     Face     *Lface;     /* left face */
 
     /* Internal data (keep hidden) */
@@ -192,7 +192,7 @@ typedef std::pair<HalfEdge, HalfEdge> EdgePair;
 //#define Dnext   Rprev->Sym  /* 3 pointers */
 //#define Rnext   Oprev->Sym  /* 3 pointers -- */
 
-class TESSmesh
+class Mesh
 {
 public:
     Vertex   m_vtxHead;       /* dummy header for vertex list  */
@@ -205,8 +205,8 @@ public:
     pool<EdgePair, LIBTESS_PAGE_SIZE> edgebuf;
 
 public:
-    TESSmesh();
-    ~TESSmesh();
+    Mesh();
+    ~Mesh();
     int init();
     void dispose();
 
@@ -229,6 +229,7 @@ public:
 
     void ZeroAllFace( Face *fZap );
 
+    //libtess2
     bool MergeConvexFaces( int maxVertsPerFace );
     void FlipEdge( HalfEdge *edge );
 
@@ -241,17 +242,17 @@ private:
 
 };
 
-TESSmesh::TESSmesh()
+Mesh::Mesh()
 {
     this->init();
 }
 
-TESSmesh::~TESSmesh()
+Mesh::~Mesh()
 {
     this->dispose();
 }
 
-int TESSmesh::init()
+int Mesh::init()
 {
     Vertex *v;
     Face *f;
@@ -293,7 +294,7 @@ int TESSmesh::init()
     return 0;
 }
 
-void TESSmesh::dispose()
+void Mesh::dispose()
 {
     vtxbuf.dispose();
     facebuf.dispose();
@@ -301,7 +302,7 @@ void TESSmesh::dispose()
     this->init();
 }
 
-AABB TESSmesh::ComputeAABB()
+AABB Mesh::ComputeAABB()
 {
     if(this->empty()){
         return AABB();
@@ -325,7 +326,7 @@ AABB TESSmesh::ComputeAABB()
  * the new vertex *before* vNext so that algorithms which walk the vertex
  * list will not see the newly created vertices.
  */
-void TESSmesh::MakeVertex( Vertex *newVertex, HalfEdge *eOrig, Vertex *vNext )
+void Mesh::MakeVertex( Vertex *newVertex, HalfEdge *eOrig, Vertex *vNext )
 {
     HalfEdge *e;
     Vertex *vPrev;
@@ -357,7 +358,7 @@ void TESSmesh::MakeVertex( Vertex *newVertex, HalfEdge *eOrig, Vertex *vNext )
  * the new face *before* fNext so that algorithms which walk the face
  * list will not see the newly created faces.
  */
-void TESSmesh::MakeFace( Face *newFace, HalfEdge *eOrig, Face *fNext )
+void Mesh::MakeFace( Face *newFace, HalfEdge *eOrig, Face *fNext )
 {
     HalfEdge *e;
     Face *fPrev;
@@ -392,7 +393,7 @@ void TESSmesh::MakeFace( Face *newFace, HalfEdge *eOrig, Face *fNext )
 /* __gl_meshMakeEdge creates one edge, two vertices, and a loop (face).
  * The loop consists of the two new half-edges.
  */
-HalfEdge * TESSmesh::MakeEdge()
+HalfEdge * Mesh::MakeEdge()
 {
     Vertex *newVertex1 = vtxbuf.allocate();
     Vertex *newVertex2 = vtxbuf.allocate();
@@ -425,7 +426,7 @@ HalfEdge * TESSmesh::MakeEdge()
  * No vertex or face structures are allocated, but these must be assigned
  * before the current edge operation is completed.
  */
-HalfEdge * TESSmesh::MakeEdge( HalfEdge *eNext )
+HalfEdge * Mesh::MakeEdge( HalfEdge *eNext )
 {
     HalfEdge *e;
     HalfEdge *eMirror;
@@ -479,7 +480,7 @@ HalfEdge * TESSmesh::MakeEdge( HalfEdge *eNext )
  * 销毁顶点并将其从全局顶点列表中删除。
  * 更新顶点循环以指向给定的新顶点。
  */
-void TESSmesh::KillVertex( Vertex *vDel, Vertex *newOrg )
+void Mesh::KillVertex( Vertex *vDel, Vertex *newOrg )
 {
     HalfEdge *e, *eStart = vDel->edge;
     Vertex *vPrev, *vNext;
@@ -503,7 +504,7 @@ void TESSmesh::KillVertex( Vertex *vDel, Vertex *newOrg )
 /* KillFace( fDel ) destroys a face and removes it from the global face
  * list.  It updates the face loop to point to a given new face.
  */
-void TESSmesh::KillFace( Face *fDel, Face *newLface )
+void Mesh::KillFace( Face *fDel, Face *newLface )
 {
     HalfEdge *e, *eStart = fDel->edge;
     Face *fPrev, *fNext;
@@ -527,7 +528,7 @@ void TESSmesh::KillFace( Face *fDel, Face *newLface )
 /* KillEdge( eDel ) destroys an edge (the half-edges eDel and eDel->Sym),
  * and removes from the global edge list.
  */
-void TESSmesh::KillEdge( HalfEdge *eDel )
+void Mesh::KillEdge( HalfEdge *eDel )
 {
     HalfEdge *ePrev, *eNext;
 
@@ -549,7 +550,7 @@ void TESSmesh::KillEdge( HalfEdge *eDel )
  * depending on whether a and b belong to different face or vertex rings.
  * For more explanation see __gl_meshSplice() below.
  */
-void TESSmesh::SpliceEdge( HalfEdge *a, HalfEdge *b )
+void Mesh::SpliceEdge( HalfEdge *a, HalfEdge *b )
 {
     HalfEdge *aOnext = a->Onext;
     HalfEdge *bOnext = b->Onext;
@@ -583,7 +584,7 @@ void TESSmesh::SpliceEdge( HalfEdge *a, HalfEdge *b )
  * If eDst == eOrg->Onext, the new vertex will have a single edge.
  * If eDst == eOrg->Oprev, the old vertex will have a single edge.
  */
-int TESSmesh::Splice( HalfEdge *eOrg, HalfEdge *eDst )
+int Mesh::Splice( HalfEdge *eOrg, HalfEdge *eDst )
 {
     int joiningLoops = FALSE;
     int joiningVertices = FALSE;
@@ -643,7 +644,7 @@ int TESSmesh::Splice( HalfEdge *eOrg, HalfEdge *eDst )
  * plus a few calls to memFree, but this would allocate and delete
  * unnecessary vertices and faces.
  */
-int TESSmesh::DeleteEdge( HalfEdge *eDel )
+int Mesh::DeleteEdge( HalfEdge *eDel )
 {
     HalfEdge *eDelSym = eDel->mirror;
     int joiningLoops = FALSE;
@@ -702,7 +703,7 @@ int TESSmesh::DeleteEdge( HalfEdge *eDel )
  * eNew == eOrg->Lnext, and eNew->Dst is a newly created vertex.
  * eOrg and eNew will have the same left face.
  */
-HalfEdge * TESSmesh::AddEdgeVertex( HalfEdge *eOrg )
+HalfEdge * Mesh::AddEdgeVertex( HalfEdge *eOrg )
 {
     HalfEdge *eNewSym;
     HalfEdge *eNew = this->MakeEdge( eOrg );
@@ -739,7 +740,7 @@ HalfEdge * TESSmesh::AddEdgeVertex( HalfEdge *eOrg )
  * 设eNew==eOrg->Lnext。新顶点是eOrg->Dst==eNew->Org。
  * eOrg和eNew拥有相同的左面。
  */
-HalfEdge * TESSmesh::SplitEdge( HalfEdge *eOrg )
+HalfEdge * Mesh::SplitEdge( HalfEdge *eOrg )
 {
     HalfEdge *eNew;
     HalfEdge *tempHalfEdge= this->AddEdgeVertex( eOrg );
@@ -774,7 +775,7 @@ HalfEdge * TESSmesh::SplitEdge( HalfEdge *eOrg )
  * If (eOrg->Lnext == eDst), the old face is reduced to a single edge.
  * If (eOrg->Lnext->Lnext == eDst), the old face is reduced to two edges.
  */
-HalfEdge * TESSmesh::Connect( HalfEdge *eOrg, HalfEdge *eDst )
+HalfEdge * Mesh::Connect( HalfEdge *eOrg, HalfEdge *eDst )
 {
     HalfEdge *eNewSym;
     int joiningLoops = FALSE;
@@ -825,7 +826,7 @@ HalfEdge * TESSmesh::Connect( HalfEdge *eOrg, HalfEdge *eDst )
  * 任何也具有空指针作为其右面的边缘都将完全删除（以及由此产生的任何隔离顶点）。
  * 可以通过以任何顺序一次一个地zapping其面来删除整个网格。ZAAPPED faces不能用于其他网格操作！
  */
-void TESSmesh::ZeroAllFace( Face *fZap )
+void Mesh::ZeroAllFace( Face *fZap )
 {
     HalfEdge *eStart = fZap->edge;
     HalfEdge *e, *eNext, *eSym;
@@ -839,7 +840,7 @@ void TESSmesh::ZeroAllFace( Face *fZap )
 
         e->Lface = NULL;
         if( e->mirror->Lface == NULL ) {
-            /* delete the edge -- see TESSmeshDelete above */
+            /* delete the edge -- see MeshDelete above */
 
             if( e->Onext == e ) {
                 this->KillVertex( e->vertex, NULL );
@@ -870,7 +871,7 @@ void TESSmesh::ZeroAllFace( Face *fZap )
 }
 
 //libtess2
-bool TESSmesh::MergeConvexFaces( int maxVertsPerFace )
+bool Mesh::MergeConvexFaces( int maxVertsPerFace )
 {
     HalfEdge *e, *eNext, *eSym;
     HalfEdge *eHead = eHead;
@@ -925,7 +926,7 @@ bool TESSmesh::MergeConvexFaces( int maxVertsPerFace )
 }
 
 //libtess2
-void TESSmesh::FlipEdge( HalfEdge *edge )
+void Mesh::FlipEdge( HalfEdge *edge )
 {
     HalfEdge *a0 = edge;
     HalfEdge *a1 = a0->Lnext;
@@ -1005,15 +1006,15 @@ void TESSmesh::FlipEdge( HalfEdge *edge )
 
 #ifdef NDEBUG
 
-void TESSmesh::CheckMesh()
+void Mesh::CheckMesh()
 {
 }
 
 #else
 
-/* tessMeshCheckMesh( mesh ) checks a mesh for self-consistency.
+/* __gl_meshCheckMesh( mesh ) checks a mesh for self-consistency.
  */
-void TESSmesh::CheckMesh()
+void Mesh::CheckMesh()
 {
     Face *fHead = &m_faceHead;
     Vertex *vHead = &m_vtxHead;

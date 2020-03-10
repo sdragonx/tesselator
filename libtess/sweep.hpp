@@ -96,7 +96,7 @@ public:
     int init( int rule );
     void dispose();
 
-    int ComputeInterior( TESSmesh& mesh, const AABB& aabb );
+    int ComputeInterior( Mesh& mesh, const AABB& aabb );
 
 private:
     ActiveRegion* allocate();
@@ -106,35 +106,35 @@ private:
     int IsWindingInside( int n );
     void ComputeWinding( ActiveRegion *reg );
 
-    void InitEdgeDict( TESSmesh& mesh, const AABB& aabb);
+    void InitEdgeDict( Mesh& mesh, const AABB& aabb);
     void DoneEdgeDict();
 
-    int InitPriorityQ( TESSmesh& mesh );
+    int InitPriorityQ( Mesh& mesh );
     void DonePriorityQ();
 
-    void AddSentinel( TESSmesh& mesh, Float smin, Float smax, Float t );
+    void AddSentinel( Mesh& mesh, Float smin, Float smax, Float t );
     ActiveRegion* AddRegionBelow( ActiveRegion *regAbove, HalfEdge *eNewUp );
-    void AddRightEdges( TESSmesh& mesh, ActiveRegion *regUp, HalfEdge *eFirst, HalfEdge *eLast, HalfEdge *eTopLeft, int cleanUp );
+    void AddRightEdges( Mesh& mesh, ActiveRegion *regUp, HalfEdge *eFirst, HalfEdge *eLast, HalfEdge *eTopLeft, int cleanUp );
     void DeleteRegion( ActiveRegion* r );
     void FinishRegion( ActiveRegion* r );
-    HalfEdge* FinishLeftRegions( TESSmesh& mesh, ActiveRegion *regFirst, ActiveRegion *regLast );
+    HalfEdge* FinishLeftRegions( Mesh& mesh, ActiveRegion *regFirst, ActiveRegion *regLast );
 
-    int CheckForLeftSplice( TESSmesh& mesh, ActiveRegion *regUp );
-    int CheckForRightSplice( TESSmesh& mesh, ActiveRegion *regUp );
+    int CheckForLeftSplice( Mesh& mesh, ActiveRegion *regUp );
+    int CheckForRightSplice( Mesh& mesh, ActiveRegion *regUp );
 
-    int CheckForIntersect( TESSmesh& mesh, ActiveRegion *regUp );
+    int CheckForIntersect( Mesh& mesh, ActiveRegion *regUp );
     void GetIntersectData( Vertex *isect, Vertex *orgUp, Vertex *dstUp, Vertex *orgLo, Vertex *dstLo );
 
-    void WalkDirtyRegions( TESSmesh& mesh, ActiveRegion *regUp );
+    void WalkDirtyRegions( Mesh& mesh, ActiveRegion *regUp );
 
-    void ConnectLeftDegenerate( TESSmesh& mesh, ActiveRegion *regUp, Vertex *vEvent );
-    void ConnectLeftVertex( TESSmesh& mesh, Vertex *vEvent );
-    void ConnectRightVertex( TESSmesh& mesh, ActiveRegion *regUp, HalfEdge *eBottomLeft );
+    void ConnectLeftDegenerate( Mesh& mesh, ActiveRegion *regUp, Vertex *vEvent );
+    void ConnectLeftVertex( Mesh& mesh, Vertex *vEvent );
+    void ConnectRightVertex( Mesh& mesh, ActiveRegion *regUp, HalfEdge *eBottomLeft );
 
-    void SweepEvent( TESSmesh& mesh, Vertex *vEvent );
+    void SweepEvent( Mesh& mesh, Vertex *vEvent );
 
-    void RemoveDegenerateEdges( TESSmesh& mesh );
-    bool RemoveDegenerateFaces( TESSmesh& mesh );
+    void RemoveDegenerateEdges( Mesh& mesh );
+    bool RemoveDegenerateFaces( Mesh& mesh );
 
     static int EdgeLeq( Sweep* sweep, ActiveRegion *reg1, ActiveRegion *reg2 );
 };
