@@ -44,7 +44,7 @@ std::vector<Vec2> points;
 //points.push_back(...)//add some points  
 tess.AddContour( 2, &points[0], sizeof(Vec2), points.size() );  
 //tess.AddContour( ... );  
-tess.Tesselate( libtess::TESS_WINDING_ODD, libtess::TESS_POLYGONS );  
+tess.Tesselate( libtess::TESS_WINDING_ODD, libtess::TESS_TRIANGLES );  
   
 //OpenGL drawing:
 void draw_elements(int shape, const vec2f* vs, const int* indices, int size)  
