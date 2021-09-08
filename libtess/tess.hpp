@@ -34,14 +34,26 @@
 
 /*
 
-Exsample:
+// 更新历史
+
+2021-09-08 11:09:31
+header only 完善化
+
+例子：
+exsample:
+
+#define LIBTESS_USE_VEC2
 
 #include <gl/glew.h>
 #include <libtess/tess.h>
 
 void draw_elements(int shape, const Vec2* vs, const int* indices, int size)
 {
+    #ifdef LIBTESS_HIGH_PRECISION
+    glVertexPointer(2, GL_DOUBLE, sizeof(Vec2), vs);
+    #else
     glVertexPointer(2, GL_FLOAT, sizeof(Vec2), vs);
+    #endif
     glEnableClientState(GL_VERTEX_ARRAY);
     glDrawElements(shape, size, GL_UNSIGNED_INT, indices);
     glDisableClientState(GL_VERTEX_ARRAY);
@@ -49,24 +61,19 @@ void draw_elements(int shape, const Vec2* vs, const int* indices, int size)
 
 libtess::Tesselator tess;
 std::vector<Vec2> points;
-points.push_back(...);//insert some points
+points.push_back(...);      // insert some points
 
-tess.AddContour( points );
+tess.add_contour( points );
 
-//TESS_TRIANGLES:
+// TESS_TRIANGLES:
 
-tess.Tesselate( TESS_WINDING_ODD, TESS_POLYGONS );
-draw_elements( GL_TRIANGLES, &tess.vertices[0], &tess.indices[0], tess.indices.size() );
+tess.tesselate( TESS_WINDING_ODD, TESS_TRIANGLES );
+draw_elements( GL_TRIANGLES, &tess.vertices[0], &tess.elements[0], tess.elements.size() );
 
-//TESS_BOUNDARY_CONTOURS:
+// TESS_BOUNDARY_CONTOURS:
 
 tess.Tesselate( TESS_WINDING_ODD, TESS_BOUNDARY_CONTOURS );
-draw_elements( GL_LINES, &tess.vertices[0], &tess.indices[0], tess.indices.size() );
-
-// 更新
-
-2021-09-08 11:09:31
-header only 完善化
+draw_elements( GL_LINES, &tess.vertices[0], &tess.elements[0], tess.elements.size() );
 
 */
 
@@ -111,27 +118,33 @@ public:
     bool reverseContours; /* AddContour() will treat CCW contours as CW and vice versa */
 
     // outputs
-    #ifdef LIBTESS_USE_VEC3
+    #ifdef LIBTESS_USE_VEC3         // 输出的顶点列表
     std::vector<Vec3> vertices;
     #else
     std::vector<Vec2> vertices;
     #endif
-    std::vector<Index>  indices;
-    std::vector<Index>  elements;
+    std::vector<Index>  indices;    // 索引列表
+    std::vector<Index>  elements;   // 顶点索引列表
 
 public:
     Tesselator();
     ~Tesselator();
 
+    // 初始化
     int init();
+
+    // 释放
     void dispose();
 
-    int AddContour( int size, const void* pointer, int stride, int count );
+    // 添加一个轮廓
+    int add_contour( int size, const void* pointer, int stride, int count );
 
-    template<typename T>
-    int AddContour( std::vector<T> points );
+    // 添加一个轮廓
+    int add_contour( const std::vector<Vec2>& points );
+    int add_contour( const std::vector<Vec3>& points );
 
-    int Tesselate( TessWindingRule windingRule, TessElementType elementType, int polySize = 3);
+    // 执行切割三角形
+    int tesselate( TessWindingRule windingRule, TessElementType elementType, int polySize = 3);
 
 private:
     // 计算normal
@@ -148,6 +161,9 @@ private:
     int OutputPolymesh( int elementType, int polySize);
 };
 
+//
+// source
+//
 
 LIBTESS_INLINE Tesselator::Tesselator() : mesh(), sweep()
 {
@@ -191,7 +207,7 @@ LIBTESS_INLINE void Tesselator::dispose()
 //   count   - number of vertices in contour.
 // Returns:
 //   LIBTESS_OK if succeed, LIBTESS_ERROR if failed.
-LIBTESS_INLINE int Tesselator::AddContour( int size, const void* pointer, int stride, int count )
+LIBTESS_INLINE int Tesselator::add_contour( int size, const void* pointer, int stride, int count )
 {
     const unsigned char *src = (const unsigned char*)pointer;
     HalfEdge *e = NULL;
@@ -250,10 +266,14 @@ LIBTESS_INLINE int Tesselator::AddContour( int size, const void* pointer, int st
     return LIBTESS_OK;
 }
 
-template<typename T>
-int Tesselator::AddContour( std::vector<T> points )
+LIBTESS_INLINE int Tesselator::add_contour(const std::vector<Vec2>& points)
 {
-    return 0;
+    return this->add_contour(2, points.data(), sizeof(Vec2), points.size());
+}
+
+LIBTESS_INLINE int Tesselator::add_contour(const std::vector<Vec3>& points)
+{
+    return this->add_contour(3, points.data(), sizeof(Vec3), points.size());
 }
 
 // Tesselate() - tesselate contours.
@@ -264,7 +284,7 @@ int Tesselator::AddContour( std::vector<T> points )
 //   polySize    - defines maximum vertices per polygons if output is polygons.
 // Returns:
 //   LIBTESS_OK if succeed, LIBTESS_ERROR if failed.
-LIBTESS_INLINE int Tesselator::Tesselate( TessWindingRule windingRule, TessElementType elementType, int polySize)
+LIBTESS_INLINE int Tesselator::tesselate( TessWindingRule windingRule, TessElementType elementType, int polySize)
 {
     int errCode;
 
