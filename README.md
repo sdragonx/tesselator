@@ -27,12 +27,18 @@ class Tesselator
 {  
   int init();  
   void dispose();  
-  int AddContour( int size, const void* pointer, int stride, int count );  
-  int Tesselate( TessWindingRule windingRule, TessElementType elementType, int polySize = 3);  
+  int add_contour( int size, const void* pointer, int stride, int count );  
+  int tesselate( TessWindingRule windingRule, TessElementType elementType, int polySize = 3);  
 };
 </code></pre>
 # Exsample:
 <pre><code>
+
+#define LIBTESS_USE_VEC2
+
+#include <gl/glew.h>
+#include <libtess/tess.hpp>
+
 struct vec2f  
 {  
     float x, y;  
@@ -44,19 +50,24 @@ tess.init();
 
 std::vector<Vec2> points;  
 //points.push_back(...)//add some points  
-tess.AddContour( 2, &points[0], sizeof(Vec2), points.size() );  
+tess.add_contour( 2, &points[0], sizeof(Vec2), points.size() );  
 //tess.AddContour( ... );  
 tess.Tesselate( libtess::TESS_WINDING_ODD, libtess::TESS_TRIANGLES );  
   
 //OpenGL drawing:
-void draw_elements(int shape, const vec2f* vs, const int* indices, int size)  
-{  
-    glVertexPointer(2, GL_FLOAT, sizeof(vec2f), vs);  
-    glEnableClientState(GL_VERTEX_ARRAY);  
-    glDrawElements(shape, size, GL_UNSIGNED_INT, indices);  
-    glDisableClientState(GL_VERTEX_ARRAY);  
-}  
-draw_elements(CGL_TRIANGLES, &tess.vertices[0], &tess.indices[0], tess.indices.size());
+void draw_elements(int shape, const Vec2* vs, const int* indices, int size)
+{
+    #ifdef LIBTESS_HIGH_PRECISION
+    glVertexPointer(2, GL_DOUBLE, sizeof(Vec2), vs);
+    #else
+    glVertexPointer(2, GL_FLOAT, sizeof(Vec2), vs);
+    #endif
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glDrawElements(shape, size, GL_UNSIGNED_INT, indices);
+    glDisableClientState(GL_VERTEX_ARRAY);
+}
+
+draw_elements(CGL_TRIANGLES, &tess.vertices[0], &tess.elements[0], tess.elements.size());
 </code></pre>
 
 TESS_TRIANGLES执行结果:  
