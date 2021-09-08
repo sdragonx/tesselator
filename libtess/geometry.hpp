@@ -39,7 +39,7 @@
 
 namespace libtess{
 
-int VertexIsCCW( Vertex *u, Vertex *v, Vertex *w )
+LIBTESS_INLINE int VertexIsCCW( Vertex *u, Vertex *v, Vertex *w )
 {
     /* For almost-degenerate situations, the results are not reliable.
      * Unless the floating-point arithmetic can be performed without
@@ -50,13 +50,13 @@ int VertexIsCCW( Vertex *u, Vertex *v, Vertex *w )
     return (u->s*(v->t - w->t) + v->s*(w->t - u->t) + w->s*(u->t - v->t)) >= 0;
 }
 
-inline bool VertexEqual(Vertex* u, Vertex* v)
+LIBTESS_INLINE bool VertexEqual(Vertex* u, Vertex* v)
 {
 //    return ((u)->s == (v)->s && (u)->t == (v)->t);
     return IsEqual(u->s, v->s) && IsEqual(u->t, v->t);
 }
 
-inline bool VertexLessEqual(Vertex* u, Vertex* v)
+LIBTESS_INLINE bool VertexLessEqual(Vertex* u, Vertex* v)
 {
 //    return ( u->s < v->s ) || //((u)->s == (v)->s && (u)->t <= (v)->t));
 //        ( IsEqual( u->s, v->s ) && ( u->t < v->t || IsEqual( u->t, v->t ) ) );
@@ -66,7 +66,7 @@ inline bool VertexLessEqual(Vertex* u, Vertex* v)
 
 }
 
-int CountFaceVertices( Face* face )
+LIBTESS_INLINE int CountFaceVertices( Face* face )
 {
     HalfEdge *e = face->edge;
     int n = 0;
@@ -77,34 +77,34 @@ int CountFaceVertices( Face* face )
     return n;
 }
 
-inline bool EdgeGoesLeft(HalfEdge* e)
+LIBTESS_INLINE bool EdgeGoesLeft(HalfEdge* e)
 {
     return VertexLessEqual( (e)->mirror->vertex, (e)->vertex );
 }
 
-inline bool EdgeGoesRight(HalfEdge* e)
+LIBTESS_INLINE bool EdgeGoesRight(HalfEdge* e)
 {
     return VertexLessEqual( (e)->vertex, (e)->mirror->vertex );
 }
 
-inline bool EdgeIsInternal(HalfEdge* e)
+LIBTESS_INLINE bool EdgeIsInternal(HalfEdge* e)
 {
     return e->mirror->Lface && e->mirror->Lface->inside;
 }
 
 /* Versions of VertLeq, EdgeSign, EdgeEval with s and t transposed. */
-inline bool VertexTransLEQ(Vertex* u, Vertex* v)
+LIBTESS_INLINE bool VertexTransLEQ(Vertex* u, Vertex* v)
 {
      return (((u)->t < (v)->t) || ((u)->t == (v)->t && (u)->s <= (v)->s));
 }
 
 //Manhattan
-Float VertexDistance(Vertex* u, Vertex* v)
+LIBTESS_INLINE Float VertexDistance(Vertex* u, Vertex* v)
 {
-    return std::fabs(u->s - v->s) + std::fabs(u->t - v->t);
+    return fabs(u->s - v->s) + fabs(u->t - v->t);
 }
 
-Float EdgeEval( Vertex *u, Vertex *v, Vertex *w )
+LIBTESS_STATIC Float EdgeEval( Vertex *u, Vertex *v, Vertex *w )
 {
     /* Given three vertices u,v,w such that VertLeq(u,v) && VertLeq(v,w),
      * evaluates the t-coord of the edge uw at the s-coord of the vertex v.
@@ -143,7 +143,7 @@ Float EdgeEval( Vertex *u, Vertex *v, Vertex *w )
     return 0;
 }
 
-Float EdgeSign( Vertex *u, Vertex *v, Vertex *w )
+LIBTESS_STATIC Float EdgeSign( Vertex *u, Vertex *v, Vertex *w )
 {
     /* Returns a number whose sign matches EdgeEval(u,v,w) but which
      * is cheaper to evaluate.  Returns > 0, == 0 , or < 0
@@ -171,7 +171,7 @@ Float EdgeSign( Vertex *u, Vertex *v, Vertex *w )
  * Define versions of EdgeSign, EdgeEval with s and t transposed.
  */
 
-Float EdgeTransEval( Vertex *u, Vertex *v, Vertex *w )
+LIBTESS_STATIC Float EdgeTransEval( Vertex *u, Vertex *v, Vertex *w )
 {
     /* Given three vertices u,v,w such that VertexTransLEQ(u,v) && VertexTransLEQ(v,w),
      * evaluates the t-coord of the edge uw at the s-coord of the vertex v.
@@ -201,7 +201,7 @@ Float EdgeTransEval( Vertex *u, Vertex *v, Vertex *w )
     return 0;
 }
 
-Float EdgeTransSign( Vertex *u, Vertex *v, Vertex *w )
+LIBTESS_STATIC Float EdgeTransSign( Vertex *u, Vertex *v, Vertex *w )
 {
     /* Returns a number whose sign matches TransEval(u,v,w) but which
      * is cheaper to evaluate.  Returns > 0, == 0 , or < 0
@@ -243,7 +243,7 @@ Float EdgeTransSign( Vertex *u, Vertex *v, Vertex *w )
 //    : (x + (y-x) * (a/(a+b))))
 //    : (y + (x-y) * (b/(a+b)))))
 
-inline Float Interpolate( Float a, Float x, Float b, Float y )
+LIBTESS_INLINE Float Interpolate( Float a, Float x, Float b, Float y )
 {
     a = (a < 0) ? 0 : a;
     b = (b < 0) ? 0 : b;
@@ -256,7 +256,7 @@ inline Float Interpolate( Float a, Float x, Float b, Float y )
  * 给定边 (o1,d1) 和 (o2,d2)，计算它们的交点。
  * 计算点保证位于由每条边定义的边界矩形的交点处。
  */
-void EdgeIntersect( Vertex *o1, Vertex *d1, Vertex *o2, Vertex *d2, Vertex *v )
+LIBTESS_STATIC void EdgeIntersect( Vertex *o1, Vertex *d1, Vertex *o2, Vertex *d2, Vertex *v )
 {
     Float z1, z2;
 
@@ -317,8 +317,8 @@ void EdgeIntersect( Vertex *o1, Vertex *d1, Vertex *o2, Vertex *d2, Vertex *v )
     }
 }
 
-//libtess2
-Float inCircle( Vertex *v, Vertex *v0, Vertex *v1, Vertex *v2 )
+// libtess2
+LIBTESS_STATIC Float inCircle( Vertex *v, Vertex *v0, Vertex *v1, Vertex *v2 )
 {
     Float adx, ady, bdx, bdy, cdx, cdy;
     Float abdet, bcdet, cadet;
@@ -342,10 +342,9 @@ Float inCircle( Vertex *v, Vertex *v0, Vertex *v1, Vertex *v2 )
     return alift * bcdet + blift * cadet + clift * abdet;
 }
 
-/*
-    Returns 1 is edge is locally delaunay
+/* Returns 1 is edge is locally delaunay
  */
-int EdgeIsLocallyDelaunay( HalfEdge *e )
+LIBTESS_INLINE int EdgeIsLocallyDelaunay( HalfEdge *e )
 {
     return inCircle(e->mirror->Lnext->Lnext->vertex, e->Lnext->vertex, e->Lnext->Lnext->vertex, e->vertex) < 0;
 }

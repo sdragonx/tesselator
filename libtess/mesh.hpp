@@ -242,17 +242,21 @@ private:
 
 };
 
-Mesh::Mesh()
+//
+// source
+//
+
+LIBTESS_INLINE Mesh::Mesh()
 {
     this->init();
 }
 
-Mesh::~Mesh()
+LIBTESS_INLINE Mesh::~Mesh()
 {
     this->dispose();
 }
 
-int Mesh::init()
+LIBTESS_INLINE int Mesh::init()
 {
     Vertex *v;
     Face *f;
@@ -294,7 +298,7 @@ int Mesh::init()
     return 0;
 }
 
-void Mesh::dispose()
+LIBTESS_INLINE void Mesh::dispose()
 {
     vtxbuf.dispose();
     facebuf.dispose();
@@ -302,7 +306,7 @@ void Mesh::dispose()
     this->init();
 }
 
-AABB Mesh::ComputeAABB()
+LIBTESS_INLINE AABB Mesh::ComputeAABB()
 {
     if(this->empty()){
         return AABB();
@@ -326,7 +330,7 @@ AABB Mesh::ComputeAABB()
  * the new vertex *before* vNext so that algorithms which walk the vertex
  * list will not see the newly created vertices.
  */
-void Mesh::MakeVertex( Vertex *newVertex, HalfEdge *eOrig, Vertex *vNext )
+LIBTESS_INLINE void Mesh::MakeVertex( Vertex *newVertex, HalfEdge *eOrig, Vertex *vNext )
 {
     HalfEdge *e;
     Vertex *vPrev;
@@ -358,7 +362,7 @@ void Mesh::MakeVertex( Vertex *newVertex, HalfEdge *eOrig, Vertex *vNext )
  * the new face *before* fNext so that algorithms which walk the face
  * list will not see the newly created faces.
  */
-void Mesh::MakeFace( Face *newFace, HalfEdge *eOrig, Face *fNext )
+LIBTESS_INLINE void Mesh::MakeFace( Face *newFace, HalfEdge *eOrig, Face *fNext )
 {
     HalfEdge *e;
     Face *fPrev;
@@ -393,7 +397,7 @@ void Mesh::MakeFace( Face *newFace, HalfEdge *eOrig, Face *fNext )
 /* __gl_meshMakeEdge creates one edge, two vertices, and a loop (face).
  * The loop consists of the two new half-edges.
  */
-HalfEdge * Mesh::MakeEdge()
+LIBTESS_INLINE HalfEdge * Mesh::MakeEdge()
 {
     Vertex *newVertex1 = vtxbuf.allocate();
     Vertex *newVertex2 = vtxbuf.allocate();
@@ -426,7 +430,7 @@ HalfEdge * Mesh::MakeEdge()
  * No vertex or face structures are allocated, but these must be assigned
  * before the current edge operation is completed.
  */
-HalfEdge * Mesh::MakeEdge( HalfEdge *eNext )
+LIBTESS_INLINE HalfEdge * Mesh::MakeEdge( HalfEdge *eNext )
 {
     HalfEdge *e;
     HalfEdge *eMirror;
@@ -480,7 +484,7 @@ HalfEdge * Mesh::MakeEdge( HalfEdge *eNext )
  * 销毁顶点并将其从全局顶点列表中删除。
  * 更新顶点循环以指向给定的新顶点。
  */
-void Mesh::KillVertex( Vertex *vDel, Vertex *newOrg )
+LIBTESS_INLINE void Mesh::KillVertex( Vertex *vDel, Vertex *newOrg )
 {
     HalfEdge *e, *eStart = vDel->edge;
     Vertex *vPrev, *vNext;
@@ -504,7 +508,7 @@ void Mesh::KillVertex( Vertex *vDel, Vertex *newOrg )
 /* KillFace( fDel ) destroys a face and removes it from the global face
  * list.  It updates the face loop to point to a given new face.
  */
-void Mesh::KillFace( Face *fDel, Face *newLface )
+LIBTESS_INLINE void Mesh::KillFace( Face *fDel, Face *newLface )
 {
     HalfEdge *e, *eStart = fDel->edge;
     Face *fPrev, *fNext;
@@ -528,7 +532,7 @@ void Mesh::KillFace( Face *fDel, Face *newLface )
 /* KillEdge( eDel ) destroys an edge (the half-edges eDel and eDel->Sym),
  * and removes from the global edge list.
  */
-void Mesh::KillEdge( HalfEdge *eDel )
+LIBTESS_INLINE void Mesh::KillEdge( HalfEdge *eDel )
 {
     HalfEdge *ePrev, *eNext;
 
@@ -550,7 +554,7 @@ void Mesh::KillEdge( HalfEdge *eDel )
  * depending on whether a and b belong to different face or vertex rings.
  * For more explanation see __gl_meshSplice() below.
  */
-void Mesh::SpliceEdge( HalfEdge *a, HalfEdge *b )
+LIBTESS_INLINE void Mesh::SpliceEdge( HalfEdge *a, HalfEdge *b )
 {
     HalfEdge *aOnext = a->Onext;
     HalfEdge *bOnext = b->Onext;
@@ -584,7 +588,7 @@ void Mesh::SpliceEdge( HalfEdge *a, HalfEdge *b )
  * If eDst == eOrg->Onext, the new vertex will have a single edge.
  * If eDst == eOrg->Oprev, the old vertex will have a single edge.
  */
-int Mesh::Splice( HalfEdge *eOrg, HalfEdge *eDst )
+LIBTESS_INLINE int Mesh::Splice( HalfEdge *eOrg, HalfEdge *eDst )
 {
     int joiningLoops = FALSE;
     int joiningVertices = FALSE;
@@ -644,7 +648,7 @@ int Mesh::Splice( HalfEdge *eOrg, HalfEdge *eDst )
  * plus a few calls to memFree, but this would allocate and delete
  * unnecessary vertices and faces.
  */
-int Mesh::DeleteEdge( HalfEdge *eDel )
+LIBTESS_INLINE int Mesh::DeleteEdge( HalfEdge *eDel )
 {
     HalfEdge *eDelSym = eDel->mirror;
     int joiningLoops = FALSE;
@@ -703,7 +707,7 @@ int Mesh::DeleteEdge( HalfEdge *eDel )
  * eNew == eOrg->Lnext, and eNew->Dst is a newly created vertex.
  * eOrg and eNew will have the same left face.
  */
-HalfEdge * Mesh::AddEdgeVertex( HalfEdge *eOrg )
+LIBTESS_INLINE HalfEdge * Mesh::AddEdgeVertex( HalfEdge *eOrg )
 {
     HalfEdge *eNewSym;
     HalfEdge *eNew = this->MakeEdge( eOrg );
@@ -740,7 +744,7 @@ HalfEdge * Mesh::AddEdgeVertex( HalfEdge *eOrg )
  * 设eNew==eOrg->Lnext。新顶点是eOrg->Dst==eNew->Org。
  * eOrg和eNew拥有相同的左面。
  */
-HalfEdge * Mesh::SplitEdge( HalfEdge *eOrg )
+LIBTESS_INLINE HalfEdge * Mesh::SplitEdge( HalfEdge *eOrg )
 {
     HalfEdge *eNew;
     HalfEdge *tempHalfEdge= this->AddEdgeVertex( eOrg );
@@ -775,7 +779,7 @@ HalfEdge * Mesh::SplitEdge( HalfEdge *eOrg )
  * If (eOrg->Lnext == eDst), the old face is reduced to a single edge.
  * If (eOrg->Lnext->Lnext == eDst), the old face is reduced to two edges.
  */
-HalfEdge * Mesh::Connect( HalfEdge *eOrg, HalfEdge *eDst )
+LIBTESS_INLINE HalfEdge * Mesh::Connect( HalfEdge *eOrg, HalfEdge *eDst )
 {
     HalfEdge *eNewSym;
     int joiningLoops = FALSE;
@@ -826,7 +830,7 @@ HalfEdge * Mesh::Connect( HalfEdge *eOrg, HalfEdge *eDst )
  * 任何也具有空指针作为其右面的边缘都将完全删除（以及由此产生的任何隔离顶点）。
  * 可以通过以任何顺序一次一个地zapping其面来删除整个网格。ZAAPPED faces不能用于其他网格操作！
  */
-void Mesh::ZeroAllFace( Face *fZap )
+LIBTESS_INLINE void Mesh::ZeroAllFace( Face *fZap )
 {
     HalfEdge *eStart = fZap->edge;
     HalfEdge *e, *eNext, *eSym;
@@ -870,11 +874,12 @@ void Mesh::ZeroAllFace( Face *fZap )
     facebuf.deallocate( fZap );
 }
 
-//libtess2
-bool Mesh::MergeConvexFaces( int maxVertsPerFace )
+// libtess2
+LIBTESS_INLINE bool Mesh::MergeConvexFaces( int maxVertsPerFace )
 {
     HalfEdge *e, *eNext, *eSym;
-    HalfEdge *eHead = eHead;
+    //HalfEdge *eHead = eHead; 2020-11-6
+    HalfEdge *eHead = &m_edgeHead;
     Vertex *va, *vb, *vc, *vd, *ve, *vf;
     int leftNv, rightNv;
 
@@ -925,8 +930,8 @@ bool Mesh::MergeConvexFaces( int maxVertsPerFace )
     return true;
 }
 
-//libtess2
-void Mesh::FlipEdge( HalfEdge *edge )
+// libtess2
+LIBTESS_INLINE void Mesh::FlipEdge( HalfEdge *edge )
 {
     HalfEdge *a0 = edge;
     HalfEdge *a1 = a0->Lnext;
@@ -1006,7 +1011,7 @@ void Mesh::FlipEdge( HalfEdge *edge )
 
 #ifdef NDEBUG
 
-void Mesh::CheckMesh()
+LIBTESS_INLINE void Mesh::CheckMesh()
 {
 }
 
@@ -1014,7 +1019,7 @@ void Mesh::CheckMesh()
 
 /* __gl_meshCheckMesh( mesh ) checks a mesh for self-consistency.
  */
-void Mesh::CheckMesh()
+LIBTESS_INLINE void Mesh::CheckMesh()
 {
     Face *fHead = &m_faceHead;
     Vertex *vHead = &m_vtxHead;

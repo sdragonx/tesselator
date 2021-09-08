@@ -35,13 +35,21 @@
 #ifndef LIBTESS_BASE_HPP
 #define LIBTESS_BASE_HPP
 
-#include <assert.h>
-#include <setjmp.h>
-#include <stddef.h>
+//#include <assert.h>
+//#include <setjmp.h>
+//#include <stddef.h>
+
+#include <algorithm>
+#include <cassert>
 #include <set>
+#include <stack>
+#include <stdint.h>
 #include <vector>
 
-namespace libtess{
+#ifdef _MSC_VER
+#undef min
+#undef max
+#endif
 
 // Config
 
@@ -59,29 +67,46 @@ namespace libtess{
 #define LIBTESS_PAGE_SIZE 256
 
 #ifdef CGL_PUBLIC_H
-  #define LIBTESS_LOG CGL_LOG
-  #define LIBTESS_UNIT_TEST(t) CGL_UNIT_TEST(t)
+#define LIBTESS_LOG CGL_LOG
 #else
-  #define LIBTESS_LOG printf
-  #define LIBTESS_UNIT_TEST(T) t
+#define LIBTESS_LOG printf
 #endif
+
+#if defined(LIBTESS_USE_UNIT_TEST) && defined(CGL_PUBLIC_H)
+#define LIBTESS_UNIT_TEST(t) CGL_UNIT_TEST(t)
+#else
+#define LIBTESS_UNIT_TEST(t) t
+#endif
+
+#ifndef LIBTESS_INLINE
+#define LIBTESS_INLINE inline
+#define LIBTESS_STATIC static
+#endif
+
+namespace libtess{
 
 // types
 
+//precision
+#ifdef LIBTESS_HIGH_PRECISION
+typedef double Float;
+#else
 typedef float Float;
+#endif
 typedef int   Index;
 typedef char  Bool;
+
 class Tesselator;
 
 // See OpenGL Red Book for description of the winding rules
 // http://www.glprogramming.com/red/chapter11.html
 enum TessWindingRule
 {
-    TESS_WINDING_ODD,           //环绕数为奇数
-    TESS_WINDING_NONZERO,       //环绕数为非0数
-    TESS_WINDING_POSITIVE,      //环绕数是正数
-    TESS_WINDING_NEGATIVE,      //环绕数是负数
-    TESS_WINDING_ABS_GEQ_TWO,   //环绕数绝对值>=2
+    TESS_WINDING_ODD,           // 环绕数为奇数
+    TESS_WINDING_NONZERO,       // 环绕数为非0数
+    TESS_WINDING_POSITIVE,      // 环绕数是正数
+    TESS_WINDING_NEGATIVE,      // 环绕数是负数
+    TESS_WINDING_ABS_GEQ_TWO,   // 环绕数绝对值 >= 2
 };
 
 
@@ -100,6 +125,17 @@ enum {
     LIBTESS_ERROR = -1
 };
 
+
+// custom vector
+/*
+exsample:
+
+#define LIBTESS_CUSTOM_VECTOR
+namespace libtess{
+    typedef glm::vec2 Vec2;
+    typedef glm::vec3 Vec3;
+}
+*/
 #ifndef LIBTESS_CUSTOM_VECTOR
 
 struct Vec2
@@ -142,22 +178,23 @@ enum {
 #define FALSE 0
 #endif
 
-inline Float Abs(Float x)
+LIBTESS_INLINE Float Abs(Float x)
 {
     return x < 0 ? -x : x;
 }
 
-inline bool IsEqual(Float a, Float b)
+LIBTESS_INLINE bool IsEqual(Float a, Float b)
 {
+    using namespace std;
     return fabs(b - a) < 0.000001f;
 }
 
-Float Dot(Vec3& u, Vec3& v)
+LIBTESS_INLINE Float Dot(Vec3& u, Vec3& v)
 {
     return u.x * v.x + u.y * v.y + u.z * v.z;
 }
 
-Vec3 Cross(Vec3& u, Vec3& v)
+LIBTESS_INLINE Vec3 Cross(Vec3& u, Vec3& v)
 {
     return Vec3(
         u.y * v.z - u.z * v.y,
@@ -178,7 +215,7 @@ void Normalize( Vec3& v )
 }
 #endif
 
-int LongAxis( Vec3& v )
+LIBTESS_INLINE int LongAxis( Vec3& v )
 {
     int i = 0;
 
@@ -187,7 +224,7 @@ int LongAxis( Vec3& v )
     return i;
 }
 
-int ShortAxis( Vec3& v )
+LIBTESS_INLINE int ShortAxis( Vec3& v )
 {
     int i = 0;
 
@@ -200,7 +237,7 @@ int ShortAxis( Vec3& v )
 // memory pool
 //
 
-template <typename T, size_t PAGE>
+template <typename T, size_t PageSize>
 class pool
 {
 public:
@@ -213,7 +250,7 @@ public:
     typedef std::size_t       size_type;
     typedef std::ptrdiff_t    difference_type;
 
-    const static size_t PAGE_SIZE = PAGE;
+    const static size_t PAGE_SIZE = PageSize;
 
 private:
     struct node{
@@ -259,7 +296,7 @@ public:
 
     pointer allocate(size_type size = 1, const_pointer = 0)
     {
-        CGL_ASSERT(size == 1);
+        assert(size == 1);
         if(!entry){
             node* buf = allocate_buffer();
             entry = buf;
@@ -271,8 +308,8 @@ public:
 
     pointer allocate(size_type n, size_type alignment, const_pointer = 0)
     {
-        CGL_ASSERT(false);
-        return null;
+        assert(false);
+        return nullptr;
     }
 
     void deallocate(pointer p, size_type = 0)
@@ -284,8 +321,8 @@ public:
 
     pointer reallocate(pointer ptr, size_type n)
     {
-        CGL_ASSERT(false);
-        return null;
+        assert(false);
+        return nullptr;
     }
 
     void clear()
@@ -294,7 +331,7 @@ public:
             return ;
         }
 
-        entry = NULL;
+        entry = nullptr;
         for(size_type i = 0; i < poolbuf.size(); ++i){
             page_type page = poolbuf[i];
             for(size_type j=0; j<PAGE_SIZE; ++j){
@@ -311,7 +348,7 @@ public:
             deallocate_buffer(poolbuf[i]);
         }
         poolbuf.clear();
-        entry = null;
+        entry = nullptr;
     }
 
     size_type max_size()const
@@ -324,7 +361,7 @@ public:
         return poolbuf.size() * PAGE_SIZE;
     }
 
-    //统计自由空间大小
+    // 统计自由空间大小
     size_type free_size()const
     {
         size_type n = 0;
@@ -354,12 +391,12 @@ public:
 private:
     page_type allocate_buffer()
     {
-        page_type page = new node[PAGE_SIZE];
+        page_type page = new node[PageSize];
         //init page
-        for(size_type i=0; i<PAGE_SIZE; ++i){
+        for(size_type i=0; i<PageSize; ++i){
             page[i].next = page + i + 1;
         }
-        page[PAGE_SIZE - 1].next = null;
+        page[PageSize - 1].next = nullptr;
         poolbuf.push_back(page);
         return page;
     }
@@ -367,7 +404,7 @@ private:
     void deallocate_buffer(page_type &page)
     {
         delete []page;
-        page = null;
+        page = nullptr;
     }
 
     pointer address(node* n)
@@ -377,7 +414,7 @@ private:
 
     node* node_pointer(void* p)
     {
-        return reinterpret_cast<node*>(reinterpret_cast<byte_t*>(p) - sizeof(node*));
+        return reinterpret_cast<node*>(reinterpret_cast<uint8_t*>(p) - sizeof(node*));
     }
 };
 
@@ -443,14 +480,14 @@ public:
             return v;
         }
         else{
-            return NULL;
+            return nullptr;
         }
     }
 
     Vertex* top()
     {
         if( heap.empty() ){
-            return NULL;
+            return nullptr;
         }
         return *heap.begin();
     }
@@ -458,7 +495,7 @@ public:
     Vertex* pop()
     {
         if( heap.empty() ){
-            return NULL;
+            return nullptr;
         }
         Vertex *v = *heap.begin();
         heap.erase(heap.begin());

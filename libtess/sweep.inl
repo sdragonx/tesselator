@@ -46,6 +46,7 @@ extern void DebugEvent( TESStesselator *tess );
 #define DebugEvent( tess )
 #endif
 
+// longjmp 转成 C++ 的异常
 #ifdef NDEBUG
     //#define LIBTESS_LONGJMP(m) if(m){ longjmp(env,1) }
     #define LIBTESS_LONGJMP(m) if(m){ throw; }
@@ -105,7 +106,7 @@ extern void DebugEvent( TESStesselator *tess );
  * 这些计算被设计得非常稳定，但当然不是完美的。
  * 特殊情况：如果两个边目的地都在扫描事件中，我们将按坡度对边进行排序（否则它们将相等地进行比较）。
  */
-int Sweep::EdgeLeq( Sweep* sweep, ActiveRegion *reg1, ActiveRegion *reg2 )
+LIBTESS_INLINE int Sweep::EdgeLeq( Sweep* sweep, ActiveRegion *reg1, ActiveRegion *reg2 )
 {
     Vertex *event = sweep->currentEvent;
     HalfEdge *e1, *e2;
@@ -136,8 +137,8 @@ int Sweep::EdgeLeq( Sweep* sweep, ActiveRegion *reg1, ActiveRegion *reg2 )
     return (t1 >= t2);
 }
 
-// 删除ActiveRegion
-void Sweep::DeleteRegion( ActiveRegion *reg )
+// 删除 ActiveRegion
+LIBTESS_INLINE void Sweep::DeleteRegion( ActiveRegion *reg )
 {
     if( reg->fixUpperEdge ) {
         /* It was created with zero winding number, so it better be
@@ -157,7 +158,7 @@ void Sweep::DeleteRegion( ActiveRegion *reg )
  * Replace an upper edge which needs fixing (see ConnectRightVertex).
  * 更换需要修复的上边缘（请参见ConnectRightVertex）。
  */
-int FixUpperEdge( Mesh& mesh, ActiveRegion *reg, HalfEdge *newEdge )
+LIBTESS_INLINE int FixUpperEdge( Mesh& mesh, ActiveRegion *reg, HalfEdge *newEdge )
 {
     assert( reg->fixUpperEdge );
     if ( !mesh.DeleteEdge( reg->eUp ) ) return 0;
@@ -168,7 +169,7 @@ int FixUpperEdge( Mesh& mesh, ActiveRegion *reg, HalfEdge *newEdge )
     return 1; 
 }
 
-static ActiveRegion *TopLeftRegion( Mesh& mesh, ActiveRegion *reg )
+LIBTESS_STATIC ActiveRegion *TopLeftRegion( Mesh& mesh, ActiveRegion *reg )
 {
     Vertex *org = reg->eUp->vertex;
     HalfEdge *e;
@@ -194,7 +195,7 @@ static ActiveRegion *TopLeftRegion( Mesh& mesh, ActiveRegion *reg )
     return reg;
 }
 
-ActiveRegion *TopRightRegion( ActiveRegion *reg )
+LIBTESS_STATIC ActiveRegion *TopRightRegion( ActiveRegion *reg )
 {
     Vertex *dst = reg->eUp->mirror->vertex;
 
@@ -216,7 +217,7 @@ ActiveRegion *TopRightRegion( ActiveRegion *reg )
  * 新区域的上边缘将是“eNewUp”。
  * 绕组号和“内部”标志不更新。
  */
-ActiveRegion* Sweep::AddRegionBelow( ActiveRegion *regAbove, HalfEdge *eNewUp )
+LIBTESS_INLINE ActiveRegion* Sweep::AddRegionBelow( ActiveRegion *regAbove, HalfEdge *eNewUp )
 {
     ActiveRegion *regNew = this->allocate();
     //if (regNew == NULL) longjmp(tess->env,1);
@@ -232,7 +233,7 @@ ActiveRegion* Sweep::AddRegionBelow( ActiveRegion *regAbove, HalfEdge *eNewUp )
     return regNew;
 }
 
-int Sweep::IsWindingInside( int n )
+LIBTESS_INLINE int Sweep::IsWindingInside( int n )
 {
     switch( windingRule ) {
         case TESS_WINDING_ODD:
@@ -253,7 +254,7 @@ int Sweep::IsWindingInside( int n )
     return( FALSE );
 }
 
-void Sweep::ComputeWinding( ActiveRegion *reg )
+LIBTESS_INLINE void Sweep::ComputeWinding( ActiveRegion *reg )
 {
     reg->windingNumber = RegionAbove(reg)->windingNumber + reg->eUp->winding;
     reg->inside = IsWindingInside( reg->windingNumber );
@@ -270,7 +271,7 @@ void Sweep::ComputeWinding( ActiveRegion *reg )
  * “inside”标志被复制到适当的网格面
  *（我们以前不能这样做——因为网格的结构总是在变化，这个面可能直到现在才存在）。
  */
-void Sweep::FinishRegion( ActiveRegion *r )
+LIBTESS_INLINE void Sweep::FinishRegion( ActiveRegion *r )
 {
     HalfEdge *e = r->eUp;
     Face *f = e->Lface;
@@ -300,7 +301,7 @@ void Sweep::FinishRegion( ActiveRegion *r )
  * 漫游在regLast上的区域停止；如果regLast为空，我们将尽可能地漫游。
  * 同时，如果需要，我们将重新链接网格，以便vOrg周围的边的顺序与字典中的相同。
  */
-HalfEdge* Sweep::FinishLeftRegions( Mesh& mesh, ActiveRegion *regFirst, ActiveRegion *regLast )
+LIBTESS_INLINE HalfEdge* Sweep::FinishLeftRegions( Mesh& mesh, ActiveRegion *regFirst, ActiveRegion *regLast )
 {
     ActiveRegion *reg, *regPrev;
     HalfEdge *e, *ePrev;
@@ -358,7 +359,7 @@ HalfEdge* Sweep::FinishLeftRegions( Mesh& mesh, ActiveRegion *regFirst, ActiveRe
  * 那么eTopLeft必须是这样的边，这样来自vOrg的一个虚构的向上垂直段
  * 将包含在eTopLeft->Oprev和eTopLeft之间；否则eTopLeft应该为空。
  */
-void Sweep::AddRightEdges(
+LIBTESS_INLINE void Sweep::AddRightEdges(
     Mesh& mesh,
     ActiveRegion *regUp,
     HalfEdge *eFirst,
@@ -433,7 +434,7 @@ void Sweep::AddRightEdges(
  * 生成“isect”的两条边中的每一条被分配50%的权重；
  * 每条边根据到“isect”的相对距离在其org和dst之间分割权重。
  */
-void VertexWeights( Vertex *isect, Vertex *org, Vertex *dst, Float *weights )
+LIBTESS_STATIC void VertexWeights( Vertex *isect, Vertex *org, Vertex *dst, Float *weights )
 {
     Float t1 = VertexDistance( org, isect );
     Float t2 = VertexDistance( dst, isect );
@@ -454,7 +455,7 @@ void VertexWeights( Vertex *isect, Vertex *org, Vertex *dst, Float *weights )
  * 以便我们可以在渲染回调中引用这个新顶点。
  * （回调已经删除）
  */
-void Sweep::GetIntersectData( Vertex *isect, Vertex *orgUp, Vertex *dstUp, Vertex *orgLo, Vertex *dstLo )
+LIBTESS_INLINE void Sweep::GetIntersectData( Vertex *isect, Vertex *orgUp, Vertex *dstUp, Vertex *orgLo, Vertex *dstLo )
 {
     Float weights[4];
     //TESS_NOTUSED( tess );
@@ -510,7 +511,7 @@ void Sweep::GetIntersectData( Vertex *isect, Vertex *orgUp, Vertex *dstUp, Verte
  * 这是一个有保证的解决方案，不管事情变得多么糟糕。
  * 基本上这是一个数值问题的组合解。
  */
-int Sweep::CheckForRightSplice( Mesh& mesh, ActiveRegion *regUp )
+LIBTESS_INLINE int Sweep::CheckForRightSplice( Mesh& mesh, ActiveRegion *regUp )
 {
     ActiveRegion *regLo = RegionBelow(regUp);
     HalfEdge *eUp = regUp->eUp;
@@ -531,16 +532,14 @@ int Sweep::CheckForRightSplice( Mesh& mesh, ActiveRegion *regUp )
         }
         else if( eUp->vertex != eLo->vertex ) {
             /* merge the two vertices, discarding eUp->Org */
-            //pq.erase( eUp->vertex );
-            //LIBTESS_LONGJMP( !mesh.Splice( eLo->mirror->Lnext, eUp ) );
-
             if(pq.find( eUp->vertex )){
                 pq.erase( eUp->vertex );
                 LIBTESS_LONGJMP( !mesh.Splice( eLo->mirror->Lnext, eUp ) );
             }
             else{
+                //这里有时候会遇到，但不进行任何操作目前也没有任何问题
                 //LIBTESS_LONGJMP( !mesh.Splice( eLo->mirror->Lnext, eUp ) );
-                LIBTESS_LOG("pq.erase( eUp->vertex ) : error.");
+                //LIBTESS_LOG("pq.erase( eUp->vertex ) : error.");
             }
         }
     }
@@ -588,7 +587,7 @@ int Sweep::CheckForRightSplice( Mesh& mesh, ActiveRegion *regUp )
  *
  * 我们只需将有问题的顶点拼接到另一条边上就可以解决这个问题。
  */
-int Sweep::CheckForLeftSplice( Mesh& mesh, ActiveRegion *regUp )
+LIBTESS_INLINE int Sweep::CheckForLeftSplice( Mesh& mesh, ActiveRegion *regUp )
 {
     ActiveRegion *regLo = RegionBelow(regUp);
     HalfEdge *eUp = regUp->eUp;
@@ -642,7 +641,7 @@ int Sweep::CheckForLeftSplice( Mesh& mesh, ActiveRegion *regUp )
  * 在这种情况下，已检查所有“脏”区域的交集，
  * 并且可能已删除regUp。
  */
-int Sweep::CheckForIntersect( Mesh& mesh, ActiveRegion *regUp )
+LIBTESS_INLINE int Sweep::CheckForIntersect( Mesh& mesh, ActiveRegion *regUp )
 {
     ActiveRegion *regLo = RegionBelow(regUp);
     HalfEdge *eUp = regUp->eUp;
@@ -801,7 +800,7 @@ int Sweep::CheckForIntersect( Mesh& mesh, ActiveRegion *regUp )
  * 此例程遍历所有脏区域，并确保满足字典不变量的要求（请参阅此文件开头的注释）。
  * 当然，当我们进行更改以恢复不变量时，可以创建新的脏区域。
  */
-void Sweep::WalkDirtyRegions( Mesh& mesh, ActiveRegion *regUp )
+LIBTESS_INLINE void Sweep::WalkDirtyRegions( Mesh& mesh, ActiveRegion *regUp )
 {
     ActiveRegion *regLo = RegionBelow(regUp);
     HalfEdge *eUp, *eLo;
@@ -912,7 +911,7 @@ void Sweep::WalkDirtyRegions( Mesh& mesh, ActiveRegion *regUp )
  * Quite possibly the vertex we connected to will turn out to be the
  * closest one, in which case we won''t need to make any changes.
  */
-void Sweep::ConnectRightVertex( Mesh& mesh, ActiveRegion *regUp, HalfEdge *eBottomLeft )
+LIBTESS_INLINE void Sweep::ConnectRightVertex( Mesh& mesh, ActiveRegion *regUp, HalfEdge *eBottomLeft )
 {
     HalfEdge *eNew;
     HalfEdge *eTopLeft = eBottomLeft->Onext;
@@ -973,14 +972,14 @@ void Sweep::ConnectRightVertex( Mesh& mesh, ActiveRegion *regUp, HalfEdge *eBott
  * TOLERANCE_NONZERO will be useful.  They were debugged before the
  * code to merge identical vertices in the main loop was added.
  */
-#define TOLERANCE_NONZERO    FALSE
+#define TOLERANCE_NONZERO FALSE
 
 /*
  * The event vertex lies exacty on an already-processed edge or vertex.
  * Adding the new vertex involves splicing it into the already-processed
  * part of the mesh.
  */
-void Sweep::ConnectLeftDegenerate( Mesh& mesh, ActiveRegion *regUp, Vertex *vEvent )
+LIBTESS_INLINE void Sweep::ConnectLeftDegenerate( Mesh& mesh, ActiveRegion *regUp, Vertex *vEvent )
 {
     HalfEdge *e, *eTopLeft, *eTopRight, *eLast;
     ActiveRegion *reg;
@@ -1048,7 +1047,7 @@ void Sweep::ConnectLeftDegenerate( Mesh& mesh, ActiveRegion *regUp, Vertex *vEve
  *	- merging with the active edge of U or L
  *	- merging with an already-processed portion of U or L
  */
-void Sweep::ConnectLeftVertex( Mesh& mesh, Vertex *vEvent )
+LIBTESS_INLINE void Sweep::ConnectLeftVertex( Mesh& mesh, Vertex *vEvent )
 {
     ActiveRegion *regUp, *regLo, *reg;
     HalfEdge *eUp, *eLo, *eNew;
@@ -1113,7 +1112,7 @@ void Sweep::ConnectLeftVertex( Mesh& mesh, Vertex *vEvent )
  * 当扫描线穿过顶点时执行所有必要的操作。
  * 更新模型和边字典。
  */
-void Sweep::SweepEvent( Mesh& mesh, Vertex *vEvent )
+LIBTESS_INLINE void Sweep::SweepEvent( Mesh& mesh, Vertex *vEvent )
 {
     ActiveRegion *regUp, *reg;
     HalfEdge *e, *eTopLeft, *eBottomLeft;
@@ -1170,7 +1169,7 @@ void Sweep::SweepEvent( Mesh& mesh, Vertex *vEvent )
  * We add two sentinel edges above and below all other edges,
  * to avoid special cases at the top and bottom.
  */
-void Sweep::AddSentinel( Mesh& mesh, Float smin, Float smax, Float t )
+LIBTESS_INLINE void Sweep::AddSentinel( Mesh& mesh, Float smin, Float smax, Float t )
 {
     HalfEdge *e;
     ActiveRegion *reg = this->allocate();
@@ -1199,8 +1198,8 @@ void Sweep::AddSentinel( Mesh& mesh, Float smin, Float smax, Float t )
  * We maintain an ordering of edge intersections with the sweep line.
  * This order is maintained in a dynamic dictionary.
  */
-//初始化词典
-void Sweep::InitEdgeDict( Mesh& mesh, const AABB& aabb )
+// 初始化词典
+LIBTESS_INLINE void Sweep::InitEdgeDict( Mesh& mesh, const AABB& aabb )
 {
     Float w, h;
     Float smin, smax, tmin, tmax;
@@ -1208,7 +1207,7 @@ void Sweep::InitEdgeDict( Mesh& mesh, const AABB& aabb )
     dict.init( this, (DictKeyComp)EdgeLeq );
 
     /* If the bbox is empty, ensure that sentinels are not coincident by slightly enlarging it. */
-    //原版更新
+    // 原版更新
 //    w = (tess->bmax[0] - tess->bmin[0]) + (Float)0.01;
 //    h = (tess->bmax[1] - tess->bmin[1]) + (Float)0.01;
 //
@@ -1228,9 +1227,9 @@ void Sweep::InitEdgeDict( Mesh& mesh, const AABB& aabb )
     AddSentinel( mesh, smin, smax, tmax );
 }
 
-//关闭词典
-//删除所有ActiveRegion
-void Sweep::DoneEdgeDict()
+// 关闭词典
+// 删除所有ActiveRegion
+LIBTESS_INLINE void Sweep::DoneEdgeDict()
 {
     ActiveRegion *reg;
     int fixedEdges = 0;
@@ -1252,10 +1251,10 @@ void Sweep::DoneEdgeDict()
     dict.dispose();
 }
 
-/*
+/* 
  * Remove zero-length edges, and contours with fewer than 3 vertices.
  */
-void Sweep::RemoveDegenerateEdges( Mesh& mesh )
+LIBTESS_INLINE void Sweep::RemoveDegenerateEdges( Mesh& mesh )
 {
     HalfEdge *e, *eNext, *eLnext;
     HalfEdge *eHead = &mesh.m_edgeHead;
@@ -1290,7 +1289,7 @@ void Sweep::RemoveDegenerateEdges( Mesh& mesh )
  * Insert all vertices into the priority queue which determines the
  * order in which vertices cross the sweep line.
  */
-int Sweep::InitPriorityQ( Mesh& mesh )
+LIBTESS_INLINE int Sweep::InitPriorityQ( Mesh& mesh )
 {
     #if 0
     PriorityQ *pq;
@@ -1341,7 +1340,8 @@ int Sweep::InitPriorityQ( Mesh& mesh )
     return LIBTESS_OK;
 }
 
-void Sweep::DonePriorityQ()
+// 清空
+LIBTESS_INLINE void Sweep::DonePriorityQ()
 {
     pq.clear();
 }
@@ -1360,7 +1360,7 @@ void Sweep::DonePriorityQ()
  * edge at the time, since one of the routines further up the stack
  * will sometimes be keeping a pointer to that edge.
  */
-bool Sweep::RemoveDegenerateFaces( Mesh& mesh )
+LIBTESS_INLINE bool Sweep::RemoveDegenerateFaces( Mesh& mesh )
 {
     Face *f, *fNext;
     HalfEdge *e;
@@ -1387,7 +1387,7 @@ bool Sweep::RemoveDegenerateFaces( Mesh& mesh )
  * to the polygon, according to the rule given by tess->windingRule.
  * Each interior region is guaranteed be monotone.
  */
-int Sweep::ComputeInterior( Mesh& mesh, const AABB& aabb )
+LIBTESS_INLINE int Sweep::ComputeInterior( Mesh& mesh, const AABB& aabb )
 {
     Vertex *v, *vNext;
 

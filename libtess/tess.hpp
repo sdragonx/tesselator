@@ -39,9 +39,9 @@ Exsample:
 #include <gl/glew.h>
 #include <libtess/tess.h>
 
-void draw_elements(int shape, const vec2f* vs, const int* indices, int size)
+void draw_elements(int shape, const Vec2* vs, const int* indices, int size)
 {
-    glVertexPointer(2, GL_FLOAT, sizeof(vec2f), vs);
+    glVertexPointer(2, GL_FLOAT, sizeof(Vec2), vs);
     glEnableClientState(GL_VERTEX_ARRAY);
     glDrawElements(shape, size, GL_UNSIGNED_INT, indices);
     glDisableClientState(GL_VERTEX_ARRAY);
@@ -62,6 +62,11 @@ draw_elements( GL_TRIANGLES, &tess.vertices[0], &tess.indices[0], tess.indices.s
 
 tess.Tesselate( TESS_WINDING_ODD, TESS_BOUNDARY_CONTOURS );
 draw_elements( GL_LINES, &tess.vertices[0], &tess.indices[0], tess.indices.size() );
+
+// 更新
+
+2021-09-08 11:09:31
+header only 完善化
 
 */
 
@@ -129,7 +134,7 @@ public:
     int Tesselate( TessWindingRule windingRule, TessElementType elementType, int polySize = 3);
 
 private:
-    //计算normal
+    // 计算normal
     Vec3 ComputeNormal();
     void CheckOrientation();
     void ProjectPolygon();
@@ -144,7 +149,7 @@ private:
 };
 
 
-Tesselator::Tesselator() : mesh(), sweep()
+LIBTESS_INLINE Tesselator::Tesselator() : mesh(), sweep()
 {
     normal = Vec3();
     processCDT = false;
@@ -152,19 +157,19 @@ Tesselator::Tesselator() : mesh(), sweep()
     vertexIndexCounter = 0;
 }
 
-Tesselator::~Tesselator()
+LIBTESS_INLINE Tesselator::~Tesselator()
 {
 
 }
 
-int Tesselator::init()
+LIBTESS_INLINE int Tesselator::init()
 {
     this->dispose();
     mesh.init();
     return 0;
 }
 
-void Tesselator::dispose()
+LIBTESS_INLINE void Tesselator::dispose()
 {
     mesh.dispose();
     sweep.dispose();
@@ -186,7 +191,7 @@ void Tesselator::dispose()
 //   count   - number of vertices in contour.
 // Returns:
 //   LIBTESS_OK if succeed, LIBTESS_ERROR if failed.
-int Tesselator::AddContour( int size, const void* pointer, int stride, int count )
+LIBTESS_INLINE int Tesselator::AddContour( int size, const void* pointer, int stride, int count )
 {
     const unsigned char *src = (const unsigned char*)pointer;
     HalfEdge *e = NULL;
@@ -248,7 +253,7 @@ int Tesselator::AddContour( int size, const void* pointer, int stride, int count
 template<typename T>
 int Tesselator::AddContour( std::vector<T> points )
 {
-
+    return 0;
 }
 
 // Tesselate() - tesselate contours.
@@ -259,7 +264,7 @@ int Tesselator::AddContour( std::vector<T> points )
 //   polySize    - defines maximum vertices per polygons if output is polygons.
 // Returns:
 //   LIBTESS_OK if succeed, LIBTESS_ERROR if failed.
-int Tesselator::Tesselate( TessWindingRule windingRule, TessElementType elementType, int polySize)
+LIBTESS_INLINE int Tesselator::Tesselate( TessWindingRule windingRule, TessElementType elementType, int polySize)
 {
     int errCode;
 
@@ -344,7 +349,7 @@ int Tesselator::Tesselate( TessWindingRule windingRule, TessElementType elementT
 }
 
 // element == GL_TRIANGLES
-int Tesselator::RenderTriangles()
+LIBTESS_INLINE int Tesselator::RenderTriangles()
 {
     Vertex *v;
     Face *f;
@@ -396,7 +401,7 @@ int Tesselator::RenderTriangles()
 }
 
 // element == GL_LINES
-int Tesselator::RenderBoundary()
+LIBTESS_INLINE int Tesselator::RenderBoundary()
 {
     HalfEdge *edge;
     Vec3 *v;

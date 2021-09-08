@@ -102,26 +102,30 @@ protected:
     }
 };
 
+//
+// source
+//
+
 // DictKey
 
-DictKey dictKey( DictNode* n )
+LIBTESS_INLINE DictKey dictKey( DictNode* n )
 {
     return n->key;
 }
 
 // Dict
 
-Dict::Dict() : head(), frame(), comp()
+LIBTESS_INLINE Dict::Dict() : head(), frame(), comp()
 {
 
 }
 
-Dict::~Dict()
+LIBTESS_INLINE Dict::~Dict()
 {
     this->dispose();
 }
 
-void Dict::init(void *_frame, DictKeyComp pfn)
+LIBTESS_INLINE void Dict::init(void *_frame, DictKeyComp pfn)
 {
     head.key = NULL;
     head.next = &head;
@@ -131,7 +135,7 @@ void Dict::init(void *_frame, DictKeyComp pfn)
     comp = pfn;
 }
 
-void Dict::dispose()
+LIBTESS_INLINE void Dict::dispose()
 {
     #ifdef LIBTESS_USE_POOL
     poolbuf.dispose();
@@ -146,7 +150,7 @@ void Dict::dispose()
     #endif
 }
 
-DictNode * Dict::insert( DictNode *node, DictKey key )
+LIBTESS_INLINE DictNode * Dict::insert( DictNode *node, DictKey key )
 {
     DictNode *newNode;
 
@@ -166,14 +170,14 @@ DictNode * Dict::insert( DictNode *node, DictKey key )
     return newNode;
 }
 
-void Dict::erase( DictNode *node )
+LIBTESS_INLINE void Dict::erase( DictNode *node )
 {
     node->next->prev = node->prev;
     node->prev->next = node->next;
     this->deallocate( node );
 }
 
-DictNode * Dict::find( DictKey key )
+LIBTESS_INLINE DictNode * Dict::find( DictKey key )
 {
     DictNode *node = &head;
 
@@ -184,12 +188,12 @@ DictNode * Dict::find( DictKey key )
     return node;
 }
 
-DictNode* Dict::min()
+LIBTESS_INLINE DictNode* Dict::min()
 {
     return head.next;
 }
 
-DictNode* Dict::max()
+LIBTESS_INLINE DictNode* Dict::max()
 {
     return head.prev;
 }

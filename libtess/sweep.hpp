@@ -65,13 +65,13 @@ struct ActiveRegion
 };
 
 //下一个面
-ActiveRegion* RegionBelow(ActiveRegion* r)
+LIBTESS_INLINE ActiveRegion* RegionBelow(ActiveRegion* r)
 {
     return (ActiveRegion *) ((r)->nodeUp)->prev->key;
 }
 
 //上一个面
-ActiveRegion* RegionAbove(ActiveRegion* r)
+LIBTESS_INLINE ActiveRegion* RegionAbove(ActiveRegion* r)
 {
     return (ActiveRegion *) ((r)->nodeUp)->next->key;
 }
@@ -89,7 +89,7 @@ protected:
     pool<ActiveRegion, LIBTESS_PAGE_SIZE> regionbuf;
 
 public:
-    jmp_buf env;          /* place to jump to when memAllocs fail */
+    //jmp_buf env;          /* place to jump to when memAllocs fail */
 
 public:
     Sweep();
@@ -139,20 +139,24 @@ private:
     static int EdgeLeq( Sweep* sweep, ActiveRegion *reg1, ActiveRegion *reg2 );
 };
 
-Sweep::Sweep()
+//
+// source
+//
+
+LIBTESS_INLINE Sweep::Sweep()
 {
     windingRule = TESS_WINDING_ODD;
     currentEvent = NULL;
 }
 
-int Sweep::init( int value )
+LIBTESS_INLINE int Sweep::init( int value )
 {
     windingRule = value;
     currentEvent = NULL;
     return LIBTESS_OK;
 }
 
-void Sweep::dispose()
+LIBTESS_INLINE void Sweep::dispose()
 {
     dict.dispose();
     pq.clear();
@@ -160,7 +164,7 @@ void Sweep::dispose()
     currentEvent = NULL;
 }
 
-ActiveRegion* Sweep::allocate()
+LIBTESS_INLINE ActiveRegion* Sweep::allocate()
 {
     #ifdef LIBTESS_USE_POOL
     return regionbuf.allocate();
@@ -169,7 +173,7 @@ ActiveRegion* Sweep::allocate()
     #endif
 }
 
-void Sweep::deallocate( ActiveRegion* r )
+LIBTESS_INLINE void Sweep::deallocate( ActiveRegion* r )
 {
     #ifdef LIBTESS_USE_POOL
     return regionbuf.deallocate( r );

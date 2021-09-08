@@ -7,7 +7,7 @@ namespace libtess{
 
 // Starting with a valid triangulation, uses the Edge Flip algorithm to
 // refine the triangulation into a Constrained Delaunay Triangulation.
-void Tesselator::MeshRefineDelaunay( Mesh *mesh )
+LIBTESS_INLINE void Tesselator::MeshRefineDelaunay( Mesh *mesh )
 {
     // At this point, we have a valid, but not optimal, triangulation.
     // We refine the triangulation using the Edge Flip algorithm

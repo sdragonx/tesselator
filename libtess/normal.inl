@@ -37,7 +37,7 @@
 
 namespace libtess{
 
-Vec3 Tesselator::ComputeNormal()
+LIBTESS_INLINE Vec3 Tesselator::ComputeNormal()
 {
     Vertex *v, *v1, *v2;
     Float c, tLen2, maxLen2;
@@ -109,7 +109,7 @@ Vec3 Tesselator::ComputeNormal()
     return norm;
 }
 
-void Tesselator::CheckOrientation()
+LIBTESS_INLINE void Tesselator::CheckOrientation()
 {
     Float area;
     Face *f, *fHead = &mesh.m_faceHead;
@@ -168,7 +168,7 @@ extern int RandomSweep;
  * Determine the polygon normal and project vertices onto the plane of the polygon.
  * 确定多边形法线并将顶点投影到多边形平面上
  */
-void Tesselator::ProjectPolygon()
+LIBTESS_INLINE void Tesselator::ProjectPolygon()
 {
     Vertex *v, *vHead = &this->mesh.m_vtxHead;
 

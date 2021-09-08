@@ -45,7 +45,7 @@ namespace libtess{
  * winding of the new edge.
  * 当我们将两条边合并为一条边时，我们需要计算新边的组合卷绕。
  */
-void AddWinding(HalfEdge* eDst, HalfEdge* eSrc)
+LIBTESS_INLINE void AddWinding(HalfEdge* eDst, HalfEdge* eSrc)
 {
     eDst->winding += eSrc->winding;
     eDst->mirror->winding += eSrc->mirror->winding;
@@ -78,7 +78,7 @@ void AddWinding(HalfEdge* eDst, HalfEdge* eSrc)
  * to the fan is a simple orientation test.  By making the fan as large
  * as possible, we restore the invariant (check it yourself).
  */
-int TessellateMonoRegion( Mesh *mesh, Face *face )
+LIBTESS_STATIC int TessellateMonoRegion( Mesh *mesh, Face *face )
 {
     HalfEdge *up, *lo;
 
@@ -146,7 +146,7 @@ int TessellateMonoRegion( Mesh *mesh, Face *face )
  * must be monotone.
  * 细分网格中标记为多边形“内部”的每个区域。每个这样的区域必须是单调的(多边形)。
  */
-int TessellateInterior( Mesh *mesh )
+LIBTESS_STATIC int TessellateInterior( Mesh *mesh )
 {
     Face *f, *next;
 
@@ -193,7 +193,7 @@ void DiscardExterior( TESSmesh *mesh )
  * If keepOnlyBoundary is TRUE, it also deletes all edges which do not
  * separate an interior region from an exterior one.
  */
-int SetWindingNumber( Mesh *mesh, int value, int keepOnlyBoundary )
+LIBTESS_STATIC int SetWindingNumber( Mesh *mesh, int value, int keepOnlyBoundary )
 {
     HalfEdge *e, *eNext;
 
