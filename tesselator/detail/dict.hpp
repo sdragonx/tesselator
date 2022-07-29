@@ -35,7 +35,7 @@
 #ifndef LIBTESS_DICT_HPP
 #define LIBTESS_DICT_HPP
 
-#include "base.hpp"
+#include "public.h"
 
 namespace libtess {
 

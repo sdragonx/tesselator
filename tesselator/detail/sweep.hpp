@@ -35,7 +35,6 @@
 #ifndef LIBTESS_SWEEP_HPP
 #define LIBTESS_SWEEP_HPP
 
-#include "base.hpp"
 #include "dict.hpp"
 #include "mesh.hpp"
 

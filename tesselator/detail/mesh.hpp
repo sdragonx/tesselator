@@ -35,7 +35,7 @@
 #ifndef LIBTESS_MESH_HPP
 #define LIBTESS_MESH_HPP
 
-#include "base.hpp"
+#include "public.h"
 
 /* The mesh operations below have three motivations: completeness,
  * convenience, and efficiency.  The basic mesh operations are MakeEdge,
