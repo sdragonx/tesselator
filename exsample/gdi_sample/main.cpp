@@ -12,7 +12,7 @@ typedef glm::vec3 Vec3;
 }
 
 //libtess¿â
-#include <cgl/math/libtess/tess.hpp>
+#include <tesselator/tesselator.hpp>
 
 //Â·¾¶ÀàĞÍ
 typedef std::vector<glm::vec2> path2f;
