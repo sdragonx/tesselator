@@ -1,4 +1,4 @@
-﻿/*
+/*
  * SGI FREE SOFTWARE LICENSE B (Version 2.0, Sept. 18, 2008)
  * Copyright (C) 1991-2000 Silicon Graphics, Inc. All Rights Reserved.
  *
@@ -58,8 +58,8 @@ LIBTESS_INLINE bool VertexEqual(Vertex* u, Vertex* v)
 
 LIBTESS_INLINE bool VertexLessEqual(Vertex* u, Vertex* v)
 {
-//    return ( u->s < v->s ) || //((u)->s == (v)->s && (u)->t <= (v)->t));
-//        ( IsEqual( u->s, v->s ) && ( u->t < v->t || IsEqual( u->t, v->t ) ) );
+    //return ( u->s < v->s ) || //((u)->s == (v)->s && (u)->t <= (v)->t));
+    //    ( IsEqual( u->s, v->s ) && ( u->t < v->t || IsEqual( u->t, v->t ) ) );
 
     return (u->s < v->s) || //((u)->s == (v)->s && (u)->t <= (v)->t));
         (IsEqual(u->s, v->s) && (u->t < v->t || IsEqual(u->t, v->t)));
@@ -98,7 +98,7 @@ LIBTESS_INLINE bool VertexTransLEQ(Vertex* u, Vertex* v)
     return (((u)->t < (v)->t) || ((u)->t == (v)->t && (u)->s <= (v)->s));
 }
 
-//Manhattan
+// Manhattan
 LIBTESS_INLINE Float VertexDistance(Vertex* u, Vertex* v)
 {
     return fabs(u->s - v->s) + fabs(u->t - v->t);
@@ -116,14 +116,14 @@ LIBTESS_STATIC Float EdgeEval(Vertex *u, Vertex *v, Vertex *w)
      * let r be the negated result (this evaluates (uw)(v->s)), then
      * r is guaranteed to satisfy MIN(u->t,w->t) <= r <= MAX(u->t,w->t).
 
-     * 给定三个顶点 u，v，w，使 VertLeq(u,v) && VertLeq(v,w)
-     * 在顶点 v 的 s 坐标处计算边 uw 的 t 坐标。
-     * 返回 v->t - (uw)(v->s)，即从 uw 到 v 的有符号距离。
-     * 如果你是垂直的（因此通过 v），结果是零。
+     * ������������ u��v��w��ʹ VertLeq(u, v) && VertLeq(v, w)
+     * �ڶ��� v �� s ���괦����� uw �� t ���ꡣ
+     * ���� v->t - (uw)(v->s)������ uw �� v ���з��ž��롣
+     * ������Ǵ�ֱ��(���ͨ�� v)��������㡣
      *
-     * 即使当 v 非常接近 u 或 w 时，计算也非常精确和稳定。
-     * 特别是如果我们设置 v->t = 0 并让 r 为求反结果（这计算（uw）（v->s）），
-     * 则r保证满足 MIN（u->t，w->t）<= r <= MAX（u->t，w->t）。
+     * ��ʹ�� v �ǳ��ӽ� u �� w ʱ������Ҳ�ǳ���ȷ���ȶ���
+     * �ر�������������� v->t = 0 ���� r Ϊ�󷴽��(���� (uw)(v->s))��
+     * ��r��֤���� MIN(u->t, w->t) <= r <= MAX(u->t, w->t)��
      */
     Float gapL, gapR;
 
@@ -150,8 +150,8 @@ LIBTESS_STATIC Float EdgeSign(Vertex *u, Vertex *v, Vertex *w)
      * is cheaper to evaluate.  Returns > 0, == 0 , or < 0
      * as v is above, on, or below the edge uw.
      *
-     * 返回一个其符号与 EdgeEval(u, v, w) 匹配但计算成本较低的数字。
-     * 当 v 在边缘 uw 的上方、上方或下方时，返回 > 0、== 0 或 < 0。
+     * ����һ��������� EdgeEval(u, v, w) ƥ�䵫����ɱ��ϵ͵����֡�
+     * �� v �ڱ�Ե uw ���Ϸ����Ϸ����·�ʱ������ > 0��== 0 �� < 0��
      */
     Float gapL, gapR;
 
@@ -231,12 +231,12 @@ LIBTESS_STATIC Float EdgeTransSign(Vertex *u, Vertex *v, Vertex *w)
  * MIN(x,y) <= r <= MAX(x,y), and the results are very accurate
  * even when a and b differ greatly in magnitude.
  *
- * 给定参数 a，x，b，y
- * 返回 (b * x + a * y) / (a + b)；如果 a == b == 0，则返回 (x + y) / 2。
- * 它要求 a，b >= 0，并在一个参数稍微为负的罕见情况下强制执行。
- * 在数值上实现是非常稳定的。
- * 特别地，它保证了结果 r 满足 MIN(x, y) <= r <= MAX(x, y)，
- * 并且即使 a 和 b 在数量级上相差很大，结果也非常精确。
+ * �������� a��x��b��y
+ * ���� (b * x + a * y) / (a + b)����� a == b == 0���򷵻� (x + y) / 2��
+ * ��Ҫ�� a��b >= 0������һ��������΢Ϊ���ĺ��������ǿ��ִ�С�
+ * ����ֵ��ʵ���Ƿǳ��ȶ��ġ�
+ * �ر�أ�����֤�˽�� r ���� MIN(x, y) <= r <= MAX(x, y)��
+ * ���Ҽ�ʹ a �� b �������������ܴ󣬽��Ҳ�ǳ���ȷ��
  */
 
 //#define RealInterpolate(a,x,b,y)
@@ -256,8 +256,9 @@ LIBTESS_INLINE Float Interpolate(Float a, Float x, Float b, Float y)
  * The computed point is guaranteed to lie in the intersection of the
  * bounding rectangles defined by each edge.
  *
- * 给定边 (o1, d1) 和 (o2, d2)，计算它们的交点。
- * 计算点保证位于由每条边定义的边界矩形的交点处。
+ * ������ (o1, d1) �� (o2, d2)���������ǵĽ��㡣
+ * ����㱣֤λ����ÿ���߶���ı߽���εĽ��㴦��
+ *
  */
 LIBTESS_STATIC void EdgeIntersect(Vertex *o1, Vertex *d1, Vertex *o2, Vertex *d2, Vertex *v)
 {
@@ -270,9 +271,9 @@ LIBTESS_STATIC void EdgeIntersect(Vertex *o1, Vertex *d1, Vertex *o2, Vertex *d2
      * and interpolate the intersection s-value from these.  Then repeat
      * using the VertexTransLEQ ordering to find the intersection t-value.
      *
-     * 这当然不是找到两条线段相交的最有效方法，但它在数值上非常稳定。
-     * 策略：在顶点排序中找到两个中间顶点，
-     * 并从中插入交点 s 值。然后重复使用 VertexTransLEQ 顺序来查找交集 t 值。
+     * �⵱Ȼ�����ҵ������߶��ཻ������Ч��������������ֵ�Ϸǳ��ȶ���
+     * ���ԣ��ڶ����������ҵ������м䶥�㣬
+     * �����в��뽻�� s ֵ��Ȼ���ظ�ʹ�� VertexTransLEQ ˳�������ҽ��� t ֵ��
      */
 
     if (!VertexLessEqual(o1, d1)) { std::swap(o1, d1); }

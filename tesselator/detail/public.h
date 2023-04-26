@@ -1,4 +1,4 @@
-Ôªø/*
+/*
  * SGI FREE SOFTWARE LICENSE B (Version 2.0, Sept. 18, 2008)
  * Copyright (C) 1991-2000 Silicon Graphics, Inc. All Rights Reserved.
  *
@@ -55,7 +55,7 @@
 
 // whether to calculate
 //#define LIBTESS_COMPUTE_NORMAL
-//#define TRUE_PROJECT  //error
+//#define TRUE_PROJECT  // error
 
 // use Vec3
 #if !defined(LIBTESS_USE_VEC2) && !defined(LIBTESS_USE_VEC3)
@@ -71,9 +71,7 @@
 #endif
 
 // log
-#ifdef CGL_PUBLIC_H
-    #define LIBTESS_LOG CGL_LOG
-#else
+#ifndef LIBTESS_LOG
     #include <stdio.h>
     #define LIBTESS_LOG printf
 #endif
@@ -102,20 +100,21 @@ namespace libtess {
 #else
     typedef float Float;
 #endif
-typedef int   Index;
-typedef char  Bool;
+typedef int Index;
+typedef char Bool;
 
 class Tesselator;
 
-// See OpenGL Red Book for description of the winding rules
-// http://www.glprogramming.com/red/chapter11.html
+/* See OpenGL Red Book for description of the winding rules
+ * http://www.glprogramming.com/red/chapter11.html
+ */
 enum TessWindingRule
 {
-    TESS_WINDING_ODD,           // ÁéØÁªïÊï∞‰∏∫Â•áÊï∞
-    TESS_WINDING_NONZERO,       // ÁéØÁªïÊï∞‰∏∫Èùû 0 Êï∞
-    TESS_WINDING_POSITIVE,      // ÁéØÁªïÊï∞ÊòØÊ≠£Êï∞
-    TESS_WINDING_NEGATIVE,      // ÁéØÁªïÊï∞ÊòØË¥üÊï∞
-    TESS_WINDING_ABS_GEQ_TWO,   // ÁéØÁªïÊï∞ÁªùÂØπÂÄº >= 2
+    TESS_WINDING_ODD,           /* ª∑»∆ ˝Œ™∆Ê ˝      */
+    TESS_WINDING_NONZERO,       /* ª∑»∆ ˝Œ™∑« 0  ˝   */
+    TESS_WINDING_POSITIVE,      /* ª∑»∆ ˝ «’˝ ˝      */
+    TESS_WINDING_NEGATIVE,      /* ª∑»∆ ˝ «∏∫ ˝      */
+    TESS_WINDING_ABS_GEQ_TWO,   /* ª∑»∆ ˝æ¯∂‘÷µ >= 2 */
 };
 
 
@@ -123,9 +122,8 @@ enum TessElementType
 {
     TESS_TRIANGLES,
     TESS_BOUNDARY_CONTOURS,
-
-//    TESS_POLYGONS,
-//    TESS_CONNECTED_POLYGONS,
+    //TESS_POLYGONS,
+    //TESS_CONNECTED_POLYGONS,
 };
 
 // error code
@@ -151,6 +149,19 @@ namespace libtess{
 struct Vec2
 {
     Float x, y;
+
+    Vec2() : x(), y() {}
+    Vec2(Float vx, Float vy) : x(vx), y(vy) {}
+
+    Float& operator[](int i)
+    {
+        return (&x)[i];
+    }
+
+    const Float& operator[](int i) const
+    {
+        return (&x)[i];
+    }
 };
 
 struct Vec3
@@ -161,6 +172,11 @@ struct Vec3
     Vec3(Float vx, Float vy, Float vz) : x(vx), y(vy), z(vz) {}
 
     Float& operator[](int i)
+    {
+        return (&x)[i];
+    }
+
+    const Float& operator[](int i) const
     {
         return (&x)[i];
     }
@@ -372,7 +388,8 @@ public:
         return poolbuf.size() * PAGE_SIZE;
     }
 
-    // ÁªüËÆ°Ëá™Áî±Á©∫Èó¥Â§ßÂ∞è
+    /* Õ≥º∆◊‘”…ø’º‰¥Û–°
+     */
     size_type free_size()const
     {
         size_type n = 0;
@@ -403,7 +420,7 @@ private:
     page_type allocate_buffer()
     {
         page_type page = new node[PageSize];
-        //init page
+        // init page
         for (size_type i = 0; i < PageSize; ++i) {
             page[i].next = page + i + 1;
         }

@@ -1,4 +1,4 @@
-ï»¿/*
+/*
  * SGI FREE SOFTWARE LICENSE B (Version 2.0, Sept. 18, 2008)
  * Copyright (C) 1991-2000 Silicon Graphics, Inc. All Rights Reserved.
  *
@@ -484,8 +484,8 @@ LIBTESS_INLINE HalfEdge * Mesh::MakeEdge(HalfEdge *eNext)
  * KillVertex( vDel )
  * destroys a vertex and removes it from the global vertex list.
  * It updates the vertex loop to point to a given new vertex.
- * é”€æ¯é¡¶ç‚¹å¹¶å°†å…¶ä»å…¨å±€é¡¶ç‚¹åˆ—è¡¨ä¸­åˆ é™¤ã€‚
- * æ›´æ–°é¡¶ç‚¹å¾ªç¯ä»¥æŒ‡å‘ç»™å®šçš„æ–°é¡¶ç‚¹ã€‚
+ * Ïú»Ù¶¥µã²¢½«Æä´ÓÈ«¾Ö¶¥µãÁĞ±íÖĞÉ¾³ı¡£
+ * ¸üĞÂ¶¥µãÑ­»·ÒÔÖ¸Ïò¸ø¶¨µÄĞÂ¶¥µã¡£
  */
 LIBTESS_INLINE void Mesh::KillVertex(Vertex *vDel, Vertex *newOrg)
 {
@@ -744,9 +744,10 @@ LIBTESS_INLINE HalfEdge * Mesh::AddEdgeVertex(HalfEdge *eOrg)
  * splits eOrg into two edges eOrg and eNew,
  * such that eNew == eOrg->Lnext.  The new vertex is eOrg->Dst == eNew->Org.
  * eOrg and eNew will have the same left face.
- * å°†eOrgåˆ†ä¸ºä¸¤ä¸ªè¾¹eOrgå’ŒeNewï¼Œ
- * è®¾eNew==eOrg->Lnextã€‚æ–°é¡¶ç‚¹æ˜¯eOrg->Dst==eNew->Orgã€‚
- * eOrgå’ŒeNewæ‹¥æœ‰ç›¸åŒçš„å·¦é¢ã€‚
+ *
+ * ½« eOrg ·ÖÎªÁ½¸ö±ß eOrg ºÍ eNew£¬
+ * Éè eNew == eOrg->Lnext¡£ĞÂ¶¥µãÊÇ eOrg->Dst == eNew->Org¡£
+ * eOrg ºÍ eNew ÓµÓĞÏàÍ¬µÄ×óÃæ¡£
  */
 LIBTESS_INLINE HalfEdge * Mesh::SplitEdge(HalfEdge *eOrg)
 {
@@ -830,9 +831,9 @@ LIBTESS_INLINE HalfEdge * Mesh::Connect(HalfEdge *eOrg, HalfEdge *eDst)
  * are deleted entirely (along with any isolated vertices this produces).
  * An entire mesh can be deleted by zapping its faces, one at a time,
  * in any order.  Zapped faces cannot be used in further mesh operations!
- * é”€æ¯é¢å¹¶å°†å…¶ä»å…¨å±€é¢åˆ—è¡¨ä¸­ç§»é™¤ã€‚fZap çš„æ‰€æœ‰è¾¹éƒ½å°†ç©ºæŒ‡é’ˆä½œä¸ºå…¶å·¦é¢ã€‚
- * ä»»ä½•ä¹Ÿå…·æœ‰ç©ºæŒ‡é’ˆä½œä¸ºå…¶å³é¢çš„è¾¹ç¼˜éƒ½å°†å®Œå…¨åˆ é™¤ï¼ˆä»¥åŠç”±æ­¤äº§ç”Ÿçš„ä»»ä½•éš”ç¦»é¡¶ç‚¹ï¼‰ã€‚
- * å¯ä»¥é€šè¿‡ä»¥ä»»ä½•é¡ºåºä¸€æ¬¡ä¸€ä¸ªåœ° zapping å…¶é¢æ¥åˆ é™¤æ•´ä¸ªç½‘æ ¼ã€‚ZAAPPED faces ä¸èƒ½ç”¨äºå…¶ä»–ç½‘æ ¼æ“ä½œï¼
+ * Ïú»ÙÃæ²¢½«Æä´ÓÈ«¾ÖÃæÁĞ±íÖĞÒÆ³ı¡£fZap µÄËùÓĞ±ß¶¼½«¿ÕÖ¸Õë×÷ÎªÆä×óÃæ¡£
+ * ÈÎºÎÒ²¾ßÓĞ¿ÕÖ¸Õë×÷ÎªÆäÓÒÃæµÄ±ßÔµ¶¼½«ÍêÈ«É¾³ı£¨ÒÔ¼°ÓÉ´Ë²úÉúµÄÈÎºÎ¸ôÀë¶¥µã£©¡£
+ * ¿ÉÒÔÍ¨¹ıÒÔÈÎºÎË³ĞòÒ»´ÎÒ»¸öµØ zapping ÆäÃæÀ´É¾³ıÕû¸öÍø¸ñ¡£ZAAPPED faces ²»ÄÜÓÃÓÚÆäËûÍø¸ñ²Ù×÷£¡
  */
 LIBTESS_INLINE void Mesh::ZeroAllFace(Face *fZap)
 {

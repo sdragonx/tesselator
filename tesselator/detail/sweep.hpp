@@ -1,4 +1,4 @@
-ï»¿/*
+/*
  * SGI FREE SOFTWARE LICENSE B (Version 2.0, Sept. 18, 2008)
  * Copyright (C) 1991-2000 Silicon Graphics, Inc. All Rights Reserved.
  *
@@ -51,7 +51,7 @@ namespace libtess {
 struct ActiveRegion
 {
     HalfEdge *eUp;      /* upper edge, directed right to left */
-    DictNode *nodeUp;   /* dictionary node corresponding to eUp. ä¸ eUp å¯¹åº”çš„ dict èŠ‚ç‚¹ */
+    DictNode *nodeUp;   /* dictionary node corresponding to eUp. Óë eUp ¶ÔÓ¦µÄ dict ½Úµã */
     int windingNumber;  /* used to determine which regions are inside the polygon */
     Bool inside;        /* is this region inside the polygon? */
     Bool sentinel;      /* marks fake edges at t = +/-infinity */
@@ -63,13 +63,15 @@ struct ActiveRegion
                          * any edges leaving to the right) */
 };
 
-// ä¸‹ä¸€ä¸ªé¢
+/* ÏÂÒ»¸öÃæ
+ */
 LIBTESS_INLINE ActiveRegion* RegionBelow(ActiveRegion* r)
 {
     return (ActiveRegion *) ((r)->nodeUp)->prev->key;
 }
 
-// ä¸Šä¸€ä¸ªé¢
+/* ÉÏÒ»¸öÃæ
+ */
 LIBTESS_INLINE ActiveRegion* RegionAbove(ActiveRegion* r)
 {
     return (ActiveRegion *) ((r)->nodeUp)->next->key;

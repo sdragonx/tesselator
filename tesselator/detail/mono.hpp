@@ -1,4 +1,4 @@
-ï»¿/*
+/*
  * SGI FREE SOFTWARE LICENSE B (Version 2.0, Sept. 18, 2008)
  * Copyright (C) 1991-2000 Silicon Graphics, Inc. All Rights Reserved.
  *
@@ -42,7 +42,7 @@ namespace libtess {
 
 /* When we merge two edges into one, we need to compute the combined
  * winding of the new edge.
- * å½“æˆ‘ä»¬å°†ä¸¤æ¡è¾¹åˆå¹¶ä¸ºä¸€æ¡è¾¹æ—¶ï¼Œæˆ‘ä»¬éœ€è¦è®¡ç®—æ–°è¾¹çš„ç»„åˆå·ç»•ã€‚
+ * µ±ÎÒÃÇ½«Á½Ìõ±ßºÏ²¢ÎªÒ»Ìõ±ßÊ±£¬ÎÒÃÇÐèÒª¼ÆËãÐÂ±ßµÄ×éºÏ¾íÈÆ¡£
  */
 LIBTESS_INLINE void AddWinding(HalfEdge* eDst, HalfEdge* eSrc)
 {
@@ -143,7 +143,7 @@ LIBTESS_STATIC int TessellateMonoRegion(Mesh *mesh, Face *face)
 /* __gl_meshTessellateInterior( mesh ) tessellates each region of
  * the mesh which is marked "inside" the polygon.  Each such region
  * must be monotone.
- * ç»†åˆ†ç½‘æ ¼ä¸­æ ‡è®°ä¸ºå¤šè¾¹å½¢â€œå†…éƒ¨â€çš„æ¯ä¸ªåŒºåŸŸã€‚æ¯ä¸ªè¿™æ ·çš„åŒºåŸŸå¿…é¡»æ˜¯å•è°ƒçš„(å¤šè¾¹å½¢)ã€‚
+ * Ï¸·ÖÍø¸ñÖÐ±ê¼ÇÎª¶à±ßÐÎ¡°ÄÚ²¿¡±µÄÃ¿¸öÇøÓò¡£Ã¿¸öÕâÑùµÄÇøÓò±ØÐëÊÇµ¥µ÷µÄ(¶à±ßÐÎ)¡£
  */
 LIBTESS_STATIC int TessellateInterior(Mesh *mesh)
 {
@@ -152,7 +152,7 @@ LIBTESS_STATIC int TessellateInterior(Mesh *mesh)
     /*LINTED*/
     for (f = mesh->m_faceHead.next; f != &mesh->m_faceHead; f = next) {
         /* Make sure we don''t try to tessellate the new triangles. */
-        // ç¡®ä¿æˆ‘ä»¬ä¸å°è¯•å¯¹æ–°çš„ä¸‰è§’å½¢è¿›è¡Œé•¶åµŒ
+        // È·±£ÎÒÃÇ²»³¢ÊÔ¶ÔÐÂµÄÈý½ÇÐÎ½øÐÐÏâÇ¶
         next = f->next;
         if (f->inside) {
             if (TessellateMonoRegion(mesh, f) != LIBTESS_OK) {

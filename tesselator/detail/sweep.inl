@@ -1,4 +1,4 @@
-ï»¿/*
+/*
  * SGI FREE SOFTWARE LICENSE B (Version 2.0, Sept. 18, 2008)
  * Copyright (C) 1991-2000 Silicon Graphics, Inc. All Rights Reserved.
  *
@@ -46,13 +46,14 @@ extern void DebugEvent(TESStesselator *tess);
 #define DebugEvent(tess)
 #endif
 
-// longjmp è½¬æˆ C++ çš„å¼‚å¸¸
+/* longjmp ×ª³É C++ µÄÒì³£
+ */
 #ifdef NDEBUG
-    //#define LIBTESS_LONGJMP(m) if(m){ longjmp(env,1) }
-    #define LIBTESS_LONGJMP(m) if(m){ throw; }
+    //#define LIBTESS_LONGJMP(m) if (m) { longjmp(env, 1) }
+    #define LIBTESS_LONGJMP(m) if (m) { throw; }
 #else
-    //#define LIBTESS_LONGJMP(m) if(m){ LIBTESS_LOG("%s %i, %s", __FILE__, __LINE__, #m); longjmp(env,1); }
-    #define LIBTESS_LONGJMP(m) if(m){ LIBTESS_LOG("%s %i, %s", __FILE__, __LINE__, #m); throw; }
+    //#define LIBTESS_LONGJMP(m) if(m) { LIBTESS_LOG("%s %i, %s", __FILE__, __LINE__, #m); longjmp(env, 1); }
+    #define LIBTESS_LONGJMP(m) if(m) { LIBTESS_LOG("%s %i, %s", __FILE__, __LINE__, #m); throw; }
 #endif
 
 /*
@@ -89,7 +90,6 @@ extern void DebugEvent(TESStesselator *tess);
 //static void WalkDirtyRegions( TESStesselator *tess, ActiveRegion *regUp );
 //static int CheckForRightSplice( TESStesselator *tess, ActiveRegion *regUp );
 
-
 /*
  * Both edges must be directed from right to left (this is the canonical
  * direction for the upper edge of each region).
@@ -101,10 +101,10 @@ extern void DebugEvent(TESStesselator *tess);
  * Special case: if both edge destinations are at the sweep event,
  * we sort the edges by slope (they would otherwise compare equally).
  *
- * ä¸¤æ¡è¾¹å¿…é¡»ä»Žå³å‘å·¦ï¼ˆè¿™æ˜¯æ¯ä¸ªåŒºåŸŸä¸Šè¾¹ç¼˜çš„è§„èŒƒæ–¹å‘ï¼‰ã€‚
- * ç­–ç•¥æ˜¯ä¸ºå½“å‰æ‰«æçº¿ä½ç½®çš„æ¯ä¸ªè¾¹è®¡ç®—ä¸€ä¸ª "t" å€¼ï¼Œç”± tess->event ç»™å‡ºã€‚
- * è¿™äº›è®¡ç®—è¢«è®¾è®¡å¾—éžå¸¸ç¨³å®šï¼Œä½†å½“ç„¶ä¸æ˜¯å®Œç¾Žçš„ã€‚
- * ç‰¹æ®Šæƒ…å†µï¼šå¦‚æžœä¸¤ä¸ªè¾¹ç›®çš„åœ°éƒ½åœ¨æ‰«æäº‹ä»¶ä¸­ï¼Œæˆ‘ä»¬å°†æŒ‰å¡åº¦å¯¹è¾¹è¿›è¡ŒæŽ’åºï¼ˆå¦åˆ™å®ƒä»¬å°†ç›¸ç­‰åœ°è¿›è¡Œæ¯”è¾ƒï¼‰ã€‚
+ * Á½Ìõ±ß±ØÐë´ÓÓÒÏò×ó£¨ÕâÊÇÃ¿¸öÇøÓòÉÏ±ßÔµµÄ¹æ·¶·½Ïò£©¡£
+ * ²ßÂÔÊÇÎªµ±Ç°É¨ÃèÏßÎ»ÖÃµÄÃ¿¸ö±ß¼ÆËãÒ»¸ö "t" Öµ£¬ÓÉ tess->event ¸ø³ö¡£
+ * ÕâÐ©¼ÆËã±»Éè¼ÆµÃ·Ç³£ÎÈ¶¨£¬µ«µ±È»²»ÊÇÍêÃÀµÄ¡£
+ * ÌØÊâÇé¿ö£ºÈç¹ûÁ½¸ö±ßÄ¿µÄµØ¶¼ÔÚÉ¨ÃèÊÂ¼þÖÐ£¬ÎÒÃÇ½«°´ÆÂ¶È¶Ô±ß½øÐÐÅÅÐò£¨·ñÔòËüÃÇ½«ÏàµÈµØ½øÐÐ±È½Ï£©¡£
  */
 LIBTESS_INLINE int Sweep::EdgeLeq(Sweep* sweep, ActiveRegion *reg1, ActiveRegion *reg2)
 {
@@ -137,7 +137,8 @@ LIBTESS_INLINE int Sweep::EdgeLeq(Sweep* sweep, ActiveRegion *reg1, ActiveRegion
     return (t1 >= t2);
 }
 
-// åˆ é™¤ ActiveRegion
+/* É¾³ý ActiveRegion
+ */
 LIBTESS_INLINE void Sweep::DeleteRegion(ActiveRegion *reg)
 {
     if (reg->fixUpperEdge) {
@@ -145,7 +146,7 @@ LIBTESS_INLINE void Sweep::DeleteRegion(ActiveRegion *reg)
          * deleted with zero winding number (ie. it better not get merged
          * with a real edge).
          *
-         * å®ƒæ˜¯ç”¨é›¶å·ç»•æ•°åˆ›å»ºçš„ï¼Œå› æ­¤æœ€å¥½ç”¨é›¶å·ç»•æ•°åˆ é™¤å®ƒï¼ˆå³ï¼Œæœ€å¥½ä¸è¦ä¸Žå®žé™…è¾¹åˆå¹¶ï¼‰ã€‚
+         * ËüÊÇÓÃÁã¾íÈÆÊý´´½¨µÄ£¬Òò´Ë×îºÃÓÃÁã¾íÈÆÊýÉ¾³ýËü£¨¼´£¬×îºÃ²»ÒªÓëÊµ¼Ê±ßºÏ²¢£©¡£
          */
         assert(reg->eUp->winding == 0);
     }
@@ -155,7 +156,7 @@ LIBTESS_INLINE void Sweep::DeleteRegion(ActiveRegion *reg)
 }
 
 /* Replace an upper edge which needs fixing (see ConnectRightVertex).
- * æ›´æ¢éœ€è¦ä¿®å¤çš„ä¸Šè¾¹ç¼˜ï¼ˆè¯·å‚è§ConnectRightVertexï¼‰ã€‚
+ * ¸ü»»ÐèÒªÐÞ¸´µÄÉÏ±ßÔµ£¨Çë²Î¼û ConnectRightVertex£©¡£
  */
 LIBTESS_INLINE int FixUpperEdge(Mesh& mesh, ActiveRegion *reg, HalfEdge *newEdge)
 {
@@ -174,7 +175,7 @@ LIBTESS_STATIC ActiveRegion *TopLeftRegion(Mesh& mesh, ActiveRegion *reg)
     HalfEdge *e;
 
     /* Find the region above the uppermost edge with the same origin
-     * åœ¨æœ€ä¸Šé¢çš„è¾¹ä¸Šæ‰¾åˆ°åŽŸç‚¹ç›¸åŒçš„åŒºåŸŸ
+     * ÔÚ×îÉÏÃæµÄ±ßÉÏÕÒµ½Ô­µãÏàÍ¬µÄÇøÓò
      */
     do {
         reg = RegionAbove(reg);
@@ -182,7 +183,7 @@ LIBTESS_STATIC ActiveRegion *TopLeftRegion(Mesh& mesh, ActiveRegion *reg)
 
     /* If the edge above was a temporary edge introduced by ConnectRightVertex,
      * now is the time to fix it.
-     * å¦‚æžœä¸Šé¢çš„è¾¹æ˜¯ConnectRightVertexå¼•å…¥çš„ä¸´æ—¶è¾¹ï¼Œä¿®å¤å®ƒã€‚
+     * Èç¹ûÉÏÃæµÄ±ßÊÇConnectRightVertexÒýÈëµÄÁÙÊ±±ß£¬ÐÞ¸´Ëü¡£
      */
     if (reg->fixUpperEdge) {
         e = mesh.Connect(RegionBelow(reg)->eUp->mirror, reg->eUp->Lnext);
@@ -212,10 +213,10 @@ LIBTESS_STATIC ActiveRegion *TopRightRegion(ActiveRegion *reg)
  * The upper edge of the new region will be "eNewUp".
  * Winding number and "inside" flag are not updated.
  *
- * åœ¨æ‰«æçº¿ä¸­æ·»åŠ ä¸€ä¸ªæ–°çš„æ´»åŠ¨åŒºåŸŸï¼Œåœ¨ "regAbove" ä¸‹é¢çš„æŸå¤„
- *ï¼ˆæ ¹æ®æ–°è¾¹åœ¨æ‰«æçº¿å­—å…¸ä¸­çš„ä½ç½®ï¼‰ã€‚
- * æ–°åŒºåŸŸçš„ä¸Šè¾¹ç¼˜å°†æ˜¯ "eNewUp"ã€‚
- * ç»•ç»„å·å’Œ "inside" æ ‡å¿—ä¸æ›´æ–°ã€‚
+ * ÔÚÉ¨ÃèÏßÖÐÌí¼ÓÒ»¸öÐÂµÄ»î¶¯ÇøÓò£¬ÔÚ "regAbove" ÏÂÃæµÄÄ³´¦
+ *£¨¸ù¾ÝÐÂ±ßÔÚÉ¨ÃèÏß×ÖµäÖÐµÄÎ»ÖÃ£©¡£
+ * ÐÂÇøÓòµÄÉÏ±ßÔµ½«ÊÇ "eNewUp"¡£
+ * ÈÆ×éºÅºÍ "inside" ±êÖ¾²»¸üÐÂ¡£
  */
 LIBTESS_INLINE ActiveRegion* Sweep::AddRegionBelow(ActiveRegion *regAbove, HalfEdge *eNewUp)
 {
@@ -267,9 +268,9 @@ LIBTESS_INLINE void Sweep::ComputeWinding(ActiveRegion *reg)
  * not do this before -- since the structure of the mesh is always
  * changing, this face may not have even existed until now).
  *
- * ä»Žæ‰«æçº¿ä¸­åˆ é™¤åŒºåŸŸã€‚å½“åŒºåŸŸçš„ä¸Šé“¾å’Œä¸‹é“¾ç›¸äº¤æ—¶ï¼ˆåœ¨æ‰«æçº¿ä¸Šçš„é¡¶ç‚¹å¤„ï¼‰ä¼šå‘ç”Ÿè¿™ç§æƒ…å†µã€‚
- * "inside" æ ‡å¿—è¢«å¤åˆ¶åˆ°é€‚å½“çš„ç½‘æ ¼é¢
- *ï¼ˆæˆ‘ä»¬ä»¥å‰ä¸èƒ½è¿™æ ·åšâ€”â€”å› ä¸ºç½‘æ ¼çš„ç»“æž„æ€»æ˜¯åœ¨å˜åŒ–ï¼Œè¿™ä¸ªé¢å¯èƒ½ç›´åˆ°çŽ°åœ¨æ‰å­˜åœ¨ï¼‰ã€‚
+ * ´ÓÉ¨ÃèÏßÖÐÉ¾³ýÇøÓò¡£µ±ÇøÓòµÄÉÏÁ´ºÍÏÂÁ´Ïà½»Ê±£¨ÔÚÉ¨ÃèÏßÉÏµÄ¶¥µã´¦£©»á·¢ÉúÕâÖÖÇé¿ö¡£
+ * "inside" ±êÖ¾±»¸´ÖÆµ½ÊÊµ±µÄÍø¸ñÃæ
+ *£¨ÎÒÃÇÒÔÇ°²»ÄÜÕâÑù×ö¡ª¡ªÒòÎªÍø¸ñµÄ½á¹¹×ÜÊÇÔÚ±ä»¯£¬Õâ¸öÃæ¿ÉÄÜÖ±µ½ÏÖÔÚ²Å´æÔÚ£©¡£
  */
 LIBTESS_INLINE void Sweep::FinishRegion(ActiveRegion *r)
 {
@@ -293,13 +294,13 @@ LIBTESS_INLINE void Sweep::FinishRegion(ActiveRegion *r)
  * mesh if necessary, so that the ordering of edges around vOrg is the
  * same as in the dictionary.
  *
- * æˆ‘ä»¬å¾—åˆ°äº†ä¸€ä¸ªæœ‰ä¸€æ¡æˆ–å¤šæ¡å·¦å‘è¾¹çš„é¡¶ç‚¹ã€‚
- * æ‰€æœ‰å—å½±å“çš„è¾¹éƒ½åº”è¯¥åœ¨è¾¹å­—å…¸ä¸­ã€‚ä»Ž regFirst->eUp å¼€å§‹ï¼Œ
- * æˆ‘ä»¬é€æ­¥åˆ é™¤æ‰€æœ‰çš„åŒºåŸŸï¼Œå…¶ä¸­ä¸¤ä¸ªè¾¹ç¼˜éƒ½æœ‰ç›¸åŒçš„åŽŸç‚¹æ¶¡ã€‚
- * åŒæ—¶ï¼Œæˆ‘ä»¬å°† "inside" æ ‡å¿—ä»Žæ´»åŠ¨åŒºåŸŸå¤åˆ¶åˆ°é¢ï¼Œå› ä¸ºæ­¤æ—¶
- * æ¯ä¸ªé¢æœ€å¤šå±žäºŽä¸€ä¸ªåŒºåŸŸï¼ˆè¿™åœ¨æ‰«æä¸­çš„æ­¤ç‚¹ä¹‹å‰ä¸ä¸€å®šæ˜¯æ­£ç¡®çš„ï¼‰ã€‚
- * æ¼«æ¸¸åœ¨ regLast ä¸Šçš„åŒºåŸŸåœæ­¢ï¼›å¦‚æžœ regLast ä¸ºç©ºï¼Œæˆ‘ä»¬å°†å°½å¯èƒ½åœ°æ¼«æ¸¸ã€‚
- * åŒæ—¶ï¼Œå¦‚æžœéœ€è¦ï¼Œæˆ‘ä»¬å°†é‡æ–°é“¾æŽ¥ç½‘æ ¼ï¼Œä»¥ä¾¿ vOrg å‘¨å›´çš„è¾¹çš„é¡ºåºä¸Žå­—å…¸ä¸­çš„ç›¸åŒã€‚
+ * ÎÒÃÇµÃµ½ÁËÒ»¸öÓÐÒ»Ìõ»ò¶àÌõ×óÏò±ßµÄ¶¥µã¡£
+ * ËùÓÐÊÜÓ°ÏìµÄ±ß¶¼Ó¦¸ÃÔÚ±ß×ÖµäÖÐ¡£´Ó regFirst->eUp ¿ªÊ¼£¬
+ * ÎÒÃÇÖð²½É¾³ýËùÓÐµÄÇøÓò£¬ÆäÖÐÁ½¸ö±ßÔµ¶¼ÓÐÏàÍ¬µÄÔ­µãÎÐ¡£
+ * Í¬Ê±£¬ÎÒÃÇ½« "inside" ±êÖ¾´Ó»î¶¯ÇøÓò¸´ÖÆµ½Ãæ£¬ÒòÎª´ËÊ±
+ * Ã¿¸öÃæ×î¶àÊôÓÚÒ»¸öÇøÓò£¨ÕâÔÚÉ¨ÃèÖÐµÄ´ËµãÖ®Ç°²»Ò»¶¨ÊÇÕýÈ·µÄ£©¡£
+ * ÂþÓÎÔÚ regLast ÉÏµÄÇøÓòÍ£Ö¹£»Èç¹û regLast Îª¿Õ£¬ÎÒÃÇ½«¾¡¿ÉÄÜµØÂþÓÎ¡£
+ * Í¬Ê±£¬Èç¹ûÐèÒª£¬ÎÒÃÇ½«ÖØÐÂÁ´½ÓÍø¸ñ£¬ÒÔ±ã vOrg ÖÜÎ§µÄ±ßµÄË³ÐòÓë×ÖµäÖÐµÄÏàÍ¬¡£
  */
 LIBTESS_INLINE HalfEdge* Sweep::FinishLeftRegions(Mesh& mesh, ActiveRegion *regFirst, ActiveRegion *regLast)
 {
@@ -353,11 +354,11 @@ LIBTESS_INLINE HalfEdge* Sweep::FinishLeftRegions(Mesh& mesh, ActiveRegion *regF
  * contained between eTopLeft->Oprev and eTopLeft; otherwise eTopLeft
  * should be NULL.
  *
- * ç›®çš„ï¼šåœ¨è¾¹å­—å…¸ä¸­æ’å…¥å³è¡Œè¾¹ï¼Œå¹¶é€‚å½“æ›´æ–°ç¼ ç»•æ•°å’Œç½‘æ ¼è¿žé€šæ€§ã€‚
- * å¥½çš„è¾¹å…±äº«ä¸€ä¸ªå…±åŒçš„åŽŸç‚¹æ¶¡ã€‚è¾¹ç¼˜ä»Žç¬¬ä¸€ä¸ªå¼€å§‹æŒ‰é€†æ—¶é’ˆæ–¹å‘æ’å…¥ï¼›
- * æœ€åŽæ’å…¥çš„è¾¹ç¼˜æ˜¯ eLast->Oprevã€‚å¦‚æžœ vOrg å·²ç»å¤„ç†äº†ä»»ä½•å‘å·¦çš„è¾¹ï¼Œ
- * é‚£ä¹ˆ eTopLeft å¿…é¡»æ˜¯è¿™æ ·çš„è¾¹ï¼Œè¿™æ ·æ¥è‡ª vOrg çš„ä¸€ä¸ªè™šæž„çš„å‘ä¸Šåž‚ç›´æ®µ
- * å°†åŒ…å«åœ¨ eTopLeft->Oprev å’Œ eTopLeft ä¹‹é—´ï¼›å¦åˆ™ eTopLeft åº”è¯¥ä¸ºç©ºã€‚
+ * Ä¿µÄ£ºÔÚ±ß×ÖµäÖÐ²åÈëÓÒÐÐ±ß£¬²¢ÊÊµ±¸üÐÂ²øÈÆÊýºÍÍø¸ñÁ¬Í¨ÐÔ¡£
+ * ºÃµÄ±ß¹²ÏíÒ»¸ö¹²Í¬µÄÔ­µãÎÐ¡£±ßÔµ´ÓµÚÒ»¸ö¿ªÊ¼°´ÄæÊ±Õë·½Ïò²åÈë£»
+ * ×îºó²åÈëµÄ±ßÔµÊÇ eLast->Oprev¡£Èç¹û vOrg ÒÑ¾­´¦ÀíÁËÈÎºÎÏò×óµÄ±ß£¬
+ * ÄÇÃ´ eTopLeft ±ØÐëÊÇÕâÑùµÄ±ß£¬ÕâÑùÀ´×Ô vOrg µÄÒ»¸öÐé¹¹µÄÏòÉÏ´¹Ö±¶Î
+ * ½«°üº¬ÔÚ eTopLeft->Oprev ºÍ eTopLeft Ö®¼ä£»·ñÔò eTopLeft Ó¦¸ÃÎª¿Õ¡£
  */
 LIBTESS_INLINE void Sweep::AddRightEdges(
     Mesh& mesh,
@@ -430,9 +431,9 @@ LIBTESS_INLINE void Sweep::AddRightEdges(
  * which generated "isect" is allocated 50% of the weight; each edge
  * splits the weight between its org and dst according to the
  * relative distance to "isect".
- * æ‰¾åˆ°ä¸€äº›æè¿° "org" å’Œ "dest" çº¿æ€§ç»„åˆçš„äº¤ç‚¹ vertex æƒé‡ã€‚
- * ç”Ÿæˆ "isect" çš„ä¸¤æ¡è¾¹ä¸­çš„æ¯ä¸€æ¡è¢«åˆ†é…50%çš„æƒé‡ï¼›
- * æ¯æ¡è¾¹æ ¹æ®åˆ° "isect" çš„ç›¸å¯¹è·ç¦»åœ¨å…¶ org å’Œ dst ä¹‹é—´åˆ†å‰²æƒé‡ã€‚
+ * ÕÒµ½Ò»Ð©ÃèÊö "org" ºÍ "dest" ÏßÐÔ×éºÏµÄ½»µã vertex È¨ÖØ¡£
+ * Éú³É "isect" µÄÁ½Ìõ±ßÖÐµÄÃ¿Ò»Ìõ±»·ÖÅä50%µÄÈ¨ÖØ£»
+ * Ã¿Ìõ±ß¸ù¾Ýµ½ "isect" µÄÏà¶Ô¾àÀëÔÚÆä org ºÍ dst Ö®¼ä·Ö¸îÈ¨ÖØ¡£
  */
 LIBTESS_STATIC void VertexWeights(Vertex *isect, Vertex *org, Vertex *dst, Float *weights)
 {
@@ -451,9 +452,9 @@ LIBTESS_STATIC void VertexWeights(Vertex *isect, Vertex *org, Vertex *dst, Float
  * from the user so that we can refer to this new vertex in the
  * rendering callbacks.
  *
- * æˆ‘ä»¬å·²ç»è®¡ç®—äº†ä¸€ä¸ªæ–°çš„äº¤ç‚¹ï¼ŒçŽ°åœ¨æˆ‘ä»¬éœ€è¦ä¸€ä¸ªæ¥è‡ªç”¨æˆ·çš„â€œæ•°æ®â€æŒ‡é’ˆï¼Œ
- * ä»¥ä¾¿æˆ‘ä»¬å¯ä»¥åœ¨æ¸²æŸ“å›žè°ƒä¸­å¼•ç”¨è¿™ä¸ªæ–°é¡¶ç‚¹ã€‚
- * ï¼ˆå›žè°ƒå·²ç»åˆ é™¤ï¼‰
+ * ÎÒÃÇÒÑ¾­¼ÆËãÁËÒ»¸öÐÂµÄ½»µã£¬ÏÖÔÚÎÒÃÇÐèÒªÒ»¸öÀ´×ÔÓÃ»§µÄ¡°Êý¾Ý¡±Ö¸Õë£¬
+ * ÒÔ±ãÎÒÃÇ¿ÉÒÔÔÚäÖÈ¾»Øµ÷ÖÐÒýÓÃÕâ¸öÐÂ¶¥µã¡£
+ * £¨»Øµ÷ÒÑ¾­É¾³ý£©
  */
 LIBTESS_INLINE void Sweep::GetIntersectData(Vertex *isect, Vertex *orgUp, Vertex *dstUp, Vertex *orgLo, Vertex *dstLo)
 {
@@ -491,25 +492,25 @@ LIBTESS_INLINE void Sweep::GetIntersectData(Vertex *isect, Vertex *orgUp, Vertex
  * This is a guaranteed solution, no matter how degenerate things get.
  * Basically this is a combinatorial solution to a numerical problem.
  *
- * æ£€æŸ¥ "regUp" çš„ä¸Šä¸‹è¾¹ç¼˜ï¼Œç¡®ä¿ eUp->Org ä½äºŽ eLo  ä¹‹ä¸Šï¼Œ
- * æˆ– eLo->Org ä½äºŽ eUp ä¹‹ä¸‹ï¼ˆå–å†³äºŽæœ€å·¦è¾¹çš„åŽŸç‚¹ï¼‰ã€‚
+ * ¼ì²é "regUp" µÄÉÏÏÂ±ßÔµ£¬È·±£ eUp->Org Î»ÓÚ eLo  Ö®ÉÏ£¬
+ * »ò eLo->Org Î»ÓÚ eUp Ö®ÏÂ£¨È¡¾öÓÚ×î×ó±ßµÄÔ­µã£©¡£
  *
- * å…¶ä¸»è¦ç›®çš„æ˜¯æ‹¼æŽ¥å…·æœ‰ç›¸åŒç›®çš„é¡¶ç‚¹å’Œå‡ ä¹Žç›¸åŒå¡åº¦ï¼ˆå³ï¼Œæˆ‘ä»¬æ— æ³•ç”¨
- * æ•°å­—åŒºåˆ†å¡åº¦ï¼‰çš„å³è¡Œè¾¹ã€‚
- * ç„¶è€Œï¼Œæ‹¼æŽ¥ä¹Ÿå¯ä»¥å¸®åŠ©æˆ‘ä»¬ä»Žæ•°å€¼è¯¯å·®ä¸­æ¢å¤è¿‡æ¥ã€‚
- * ä¾‹å¦‚ï¼Œå‡è®¾æœ‰ä¸€æ¬¡æˆ‘ä»¬æ£€æŸ¥äº† eUp å’Œ eLoï¼Œå¹¶ç¡®å®š eUp->Org å‡ ä¹Žä¸é«˜äºŽ eLoã€‚
- * ç„¶åŽï¼Œæˆ‘ä»¬å°† eLo åˆ†æˆä¸¤æ¡è¾¹ï¼ˆä¾‹å¦‚ï¼Œä»Žè¿™æ ·çš„æ‹¼æŽ¥æ“ä½œä¸­ï¼‰ã€‚
- * è¿™ä¼šæ”¹å˜æˆ‘ä»¬æµ‹è¯•çš„ç»“æžœï¼Œæ‰€ä»¥çŽ°åœ¨ eUp->Org ä¸Ž eLo å‘ç”Ÿäº†å†²çªï¼Œ
- * æˆ–è€…å‡ ä¹Žä½ŽäºŽ eLoã€‚æˆ‘ä»¬å¿…é¡»ä¿®æ­£è¿™ä¸ªæ¡ä»¶ä»¥ä¿æŒå­—å…¸çš„ä¸å˜é‡ã€‚
+ * ÆäÖ÷ÒªÄ¿µÄÊÇÆ´½Ó¾ßÓÐÏàÍ¬Ä¿µÄ¶¥µãºÍ¼¸ºõÏàÍ¬ÆÂ¶È£¨¼´£¬ÎÒÃÇÎÞ·¨ÓÃ
+ * Êý×ÖÇø·ÖÆÂ¶È£©µÄÓÒÐÐ±ß¡£
+ * È»¶ø£¬Æ´½ÓÒ²¿ÉÒÔ°ïÖúÎÒÃÇ´ÓÊýÖµÎó²îÖÐ»Ö¸´¹ýÀ´¡£
+ * ÀýÈç£¬¼ÙÉèÓÐÒ»´ÎÎÒÃÇ¼ì²éÁË eUp ºÍ eLo£¬²¢È·¶¨ eUp->Org ¼¸ºõ²»¸ßÓÚ eLo¡£
+ * È»ºó£¬ÎÒÃÇ½« eLo ·Ö³ÉÁ½Ìõ±ß£¨ÀýÈç£¬´ÓÕâÑùµÄÆ´½Ó²Ù×÷ÖÐ£©¡£
+ * Õâ»á¸Ä±äÎÒÃÇ²âÊÔµÄ½á¹û£¬ËùÒÔÏÖÔÚ eUp->Org Óë eLo ·¢ÉúÁË³åÍ»£¬
+ * »òÕß¼¸ºõµÍÓÚ eLo¡£ÎÒÃÇ±ØÐëÐÞÕýÕâ¸öÌõ¼þÒÔ±£³Ö×ÖµäµÄ²»±äÁ¿¡£
  *
- * ä¸€ç§å¯èƒ½æ˜¯å†æ¬¡æ£€æŸ¥è¿™äº›è¾¹æ˜¯å¦ç›¸äº¤ï¼ˆå³ CheckForIntersectï¼‰ã€‚
- * å¦‚æžœå¯èƒ½çš„è¯ï¼Œè¿™å°±æ˜¯æˆ‘ä»¬è¦åšçš„ã€‚
- * ç„¶è€Œ CheckForIntersect è¦æ±‚ tess->event ä½äºŽ eUp å’Œ eLo ä¹‹é—´ï¼Œ
- * å› æ­¤å½“äº¤é›†è®¡ç®—ç»™å‡ºäº†ä¸€ä¸ªä¸å¯ç”¨çš„ç­”æ¡ˆæ—¶ï¼Œå®ƒæœ‰ä¸€äº›ä¸œè¥¿å¯ä»¥ä¾é ã€‚
- * å› æ­¤ï¼Œå¯¹äºŽé‚£äº›æˆ‘ä»¬æ— æ³•æ£€æŸ¥ç›¸äº¤çš„æƒ…å†µï¼Œ
- * è¿™ä¸ªä¾‹ç¨‹é€šè¿‡å°†æœ‰é—®é¢˜çš„é¡¶ç‚¹æ‹¼æŽ¥åˆ°å¦ä¸€æ¡è¾¹æ¥è§£å†³é—®é¢˜ã€‚
- * è¿™æ˜¯ä¸€ä¸ªæœ‰ä¿è¯çš„è§£å†³æ–¹æ¡ˆï¼Œä¸ç®¡äº‹æƒ…å˜å¾—å¤šä¹ˆç³Ÿç³•ã€‚
- * åŸºæœ¬ä¸Šè¿™æ˜¯ä¸€ä¸ªæ•°å€¼é—®é¢˜çš„ç»„åˆè§£ã€‚
+ * Ò»ÖÖ¿ÉÄÜÊÇÔÙ´Î¼ì²éÕâÐ©±ßÊÇ·ñÏà½»£¨¼´ CheckForIntersect£©¡£
+ * Èç¹û¿ÉÄÜµÄ»°£¬Õâ¾ÍÊÇÎÒÃÇÒª×öµÄ¡£
+ * È»¶ø CheckForIntersect ÒªÇó tess->event Î»ÓÚ eUp ºÍ eLo Ö®¼ä£¬
+ * Òò´Ëµ±½»¼¯¼ÆËã¸ø³öÁËÒ»¸ö²»¿ÉÓÃµÄ´ð°¸Ê±£¬ËüÓÐÒ»Ð©¶«Î÷¿ÉÒÔÒÀ¿¿¡£
+ * Òò´Ë£¬¶ÔÓÚÄÇÐ©ÎÒÃÇÎÞ·¨¼ì²éÏà½»µÄÇé¿ö£¬
+ * Õâ¸öÀý³ÌÍ¨¹ý½«ÓÐÎÊÌâµÄ¶¥µãÆ´½Óµ½ÁíÒ»Ìõ±ßÀ´½â¾öÎÊÌâ¡£
+ * ÕâÊÇÒ»¸öÓÐ±£Ö¤µÄ½â¾ö·½°¸£¬²»¹ÜÊÂÇé±äµÃ¶àÃ´Ôã¸â¡£
+ * »ù±¾ÉÏÕâÊÇÒ»¸öÊýÖµÎÊÌâµÄ×éºÏ½â¡£
  */
 LIBTESS_INLINE int Sweep::CheckForRightSplice(Mesh& mesh, ActiveRegion *regUp)
 {
@@ -537,7 +538,7 @@ LIBTESS_INLINE int Sweep::CheckForRightSplice(Mesh& mesh, ActiveRegion *regUp)
                 LIBTESS_LONGJMP(!mesh.Splice(eLo->mirror->Lnext, eUp));
             }
             else {
-                // è¿™é‡Œæœ‰æ—¶å€™ä¼šé‡åˆ°ï¼Œä½†ä¸è¿›è¡Œä»»ä½•æ“ä½œç›®å‰ä¹Ÿæ²¡æœ‰ä»»ä½•é—®é¢˜
+                // ÕâÀïÓÐÊ±ºò»áÓöµ½£¬µ«²»½øÐÐÈÎºÎ²Ù×÷Ä¿Ç°Ò²Ã»ÓÐÈÎºÎÎÊÌâ
                 //LIBTESS_LONGJMP( !mesh.Splice( eLo->mirror->Lnext, eUp ) );
                 //LIBTESS_LOG("pq.erase( eUp->vertex ) : error.");
             }
@@ -575,17 +576,17 @@ LIBTESS_INLINE int Sweep::CheckForRightSplice(Mesh& mesh, ActiveRegion *regUp)
  * We fix the problem by just splicing the offending vertex into the
  * other edge.
  *
- * æ£€æŸ¥ "regUp" çš„ä¸Šä¸‹è¾¹ç¼˜ï¼Œç¡®ä¿ eUp->Dst é«˜äºŽ eLoï¼Œ
- * æˆ– eLo->Dst ä½ŽäºŽ eUpï¼ˆå–å†³äºŽå“ªä¸ªç›®çš„åœ°æœ€å³è¾¹ï¼‰ã€‚
- * ä»Žç†è®ºä¸Šè®²ï¼Œè¿™åº”è¯¥æ˜¯çœŸçš„ã€‚
- * ä½†æ˜¯ï¼Œå°†ä¸€æ¡è¾¹åˆ†æˆä¸¤æ®µå¯èƒ½ä¼šæ›´æ”¹å…ˆå‰æµ‹è¯•çš„ç»“æžœã€‚
- * ä¾‹å¦‚ï¼Œå‡è®¾æœ‰ä¸€æ¬¡æˆ‘ä»¬æ£€æŸ¥äº† eUp å’Œ eLoï¼Œå¹¶ç¡®å®š eUp->Dst å‡ ä¹Žä¸é«˜äºŽ eLoã€‚
- * ç„¶åŽï¼Œæˆ‘ä»¬å°† eLo åˆ†æˆä¸¤æ¡è¾¹ï¼ˆä¾‹å¦‚ï¼Œä»Žè¿™æ ·çš„æ‹¼æŽ¥æ“ä½œä¸­ï¼‰ã€‚
- * è¿™å¯èƒ½ä¼šæ”¹å˜æµ‹è¯•ç»“æžœï¼Œå› æ­¤çŽ°åœ¨ eUp->Dst ä¸Ž eLo å‘ç”Ÿå†²çªï¼Œæˆ–è€…å‡ ä¹Žä½ŽäºŽ eLoã€‚
- * æˆ‘ä»¬å¿…é¡»çº æ­£è¿™ä¸ªæ¡ä»¶ä»¥ä¿æŒå­—å…¸ä¸å˜é‡ï¼ˆå¦åˆ™æ–°çš„è¾¹å¯èƒ½ä¼šæ’å…¥åˆ°å­—å…¸ä¸­çš„
- * é”™è¯¯ä½ç½®ï¼Œå¹¶ä¸”ä¼šå‘ç”Ÿé”™è¯¯çš„äº‹æƒ…ï¼‰ã€‚
+ * ¼ì²é "regUp" µÄÉÏÏÂ±ßÔµ£¬È·±£ eUp->Dst ¸ßÓÚ eLo£¬
+ * »ò eLo->Dst µÍÓÚ eUp£¨È¡¾öÓÚÄÄ¸öÄ¿µÄµØ×îÓÒ±ß£©¡£
+ * ´ÓÀíÂÛÉÏ½²£¬ÕâÓ¦¸ÃÊÇÕæµÄ¡£
+ * µ«ÊÇ£¬½«Ò»Ìõ±ß·Ö³ÉÁ½¶Î¿ÉÄÜ»á¸ü¸ÄÏÈÇ°²âÊÔµÄ½á¹û¡£
+ * ÀýÈç£¬¼ÙÉèÓÐÒ»´ÎÎÒÃÇ¼ì²éÁË eUp ºÍ eLo£¬²¢È·¶¨ eUp->Dst ¼¸ºõ²»¸ßÓÚ eLo¡£
+ * È»ºó£¬ÎÒÃÇ½« eLo ·Ö³ÉÁ½Ìõ±ß£¨ÀýÈç£¬´ÓÕâÑùµÄÆ´½Ó²Ù×÷ÖÐ£©¡£
+ * Õâ¿ÉÄÜ»á¸Ä±ä²âÊÔ½á¹û£¬Òò´ËÏÖÔÚ eUp->Dst Óë eLo ·¢Éú³åÍ»£¬»òÕß¼¸ºõµÍÓÚ eLo¡£
+ * ÎÒÃÇ±ØÐë¾ÀÕýÕâ¸öÌõ¼þÒÔ±£³Ö×Öµä²»±äÁ¿£¨·ñÔòÐÂµÄ±ß¿ÉÄÜ»á²åÈëµ½×ÖµäÖÐµÄ
+ * ´íÎóÎ»ÖÃ£¬²¢ÇÒ»á·¢Éú´íÎóµÄÊÂÇé£©¡£
  *
- * æˆ‘ä»¬åªéœ€å°†æœ‰é—®é¢˜çš„é¡¶ç‚¹æ‹¼æŽ¥åˆ°å¦ä¸€æ¡è¾¹ä¸Šå°±å¯ä»¥è§£å†³è¿™ä¸ªé—®é¢˜ã€‚
+ * ÎÒÃÇÖ»Ðè½«ÓÐÎÊÌâµÄ¶¥µãÆ´½Óµ½ÁíÒ»Ìõ±ßÉÏ¾Í¿ÉÒÔ½â¾öÕâ¸öÎÊÌâ¡£
  */
 LIBTESS_INLINE int Sweep::CheckForLeftSplice(Mesh& mesh, ActiveRegion *regUp)
 {
@@ -634,12 +635,12 @@ LIBTESS_INLINE int Sweep::CheckForLeftSplice(Mesh& mesh, ActiveRegion *regUp)
  * call to AddRightEdges(); in this case all "dirty" regions have been
  * checked for intersections, and possibly regUp has been deleted.
  *
- * æ£€æŸ¥ç»™å®šåŒºåŸŸçš„ä¸Šè¾¹ç¼˜å’Œä¸‹è¾¹ç¼˜æ˜¯å¦ç›¸äº¤ã€‚
- * å¦‚æžœæ˜¯ï¼Œåˆ™åˆ›å»ºäº¤é›†å¹¶å°†å…¶æ·»åŠ åˆ°æ•°æ®ç»“æž„ä¸­ã€‚
+ * ¼ì²é¸ø¶¨ÇøÓòµÄÉÏ±ßÔµºÍÏÂ±ßÔµÊÇ·ñÏà½»¡£
+ * Èç¹ûÊÇ£¬Ôò´´½¨½»¼¯²¢½«ÆäÌí¼Óµ½Êý¾Ý½á¹¹ÖÐ¡£
  *
- * å¦‚æžœæ·»åŠ æ–°äº¤é›†å¯¼è‡´é€’å½’è°ƒç”¨ AddRightEdges()ï¼Œåˆ™è¿”å›ž TRUEï¼›
- * åœ¨è¿™ç§æƒ…å†µä¸‹ï¼Œå·²æ£€æŸ¥æ‰€æœ‰ "dirty" åŒºåŸŸçš„äº¤é›†ï¼Œ
- * å¹¶ä¸”å¯èƒ½å·²åˆ é™¤ regUpã€‚
+ * Èç¹ûÌí¼ÓÐÂ½»¼¯µ¼ÖÂµÝ¹éµ÷ÓÃ AddRightEdges()£¬Ôò·µ»Ø TRUE£»
+ * ÔÚÕâÖÖÇé¿öÏÂ£¬ÒÑ¼ì²éËùÓÐ "dirty" ÇøÓòµÄ½»¼¯£¬
+ * ²¢ÇÒ¿ÉÄÜÒÑÉ¾³ý regUp¡£
  */
 LIBTESS_INLINE int Sweep::CheckForIntersect(Mesh& mesh, ActiveRegion *regUp)
 {
@@ -776,12 +777,14 @@ LIBTESS_INLINE int Sweep::CheckForIntersect(Mesh& mesh, ActiveRegion *regUp)
     eUp->vertex->s = isect.s;
     eUp->vertex->t = isect.t;
     pq.insert(eUp->vertex);
-//    eUp->vertex->pqHandle = tess->pq.insert( eUp->vertex );
-//    if (eUp->vertex->pqHandle == INV_HANDLE) {
-//        pqDeletePriorityQ( &tess->alloc, tess->pq );
-//        tess->pq = NULL;
-//        longjmp(tess->env,1);
-//    }
+    /*
+    eUp->vertex->pqHandle = tess->pq.insert( eUp->vertex );
+    if (eUp->vertex->pqHandle == INV_HANDLE) {
+        pqDeletePriorityQ( &tess->alloc, tess->pq );
+        tess->pq = NULL;
+        longjmp(tess->env,1);
+    }
+    */
     GetIntersectData(eUp->vertex, orgUp, dstUp, orgLo, dstLo);
     RegionAbove(regUp)->dirty = regUp->dirty = regLo->dirty = TRUE;
     return FALSE;
@@ -795,9 +798,9 @@ LIBTESS_INLINE int Sweep::CheckForIntersect(Mesh& mesh, ActiveRegion *regUp)
  * new dirty regions can be created as we make changes to restore
  * the invariants.
  *
- * å½“ä»»ä½•åŒºåŸŸçš„ä¸Šè¾¹ç¼˜æˆ–ä¸‹è¾¹ç¼˜æ›´æ”¹æ—¶ï¼Œè¯¥åŒºåŸŸå°†æ ‡è®°ä¸º "dirty"ã€‚
- * æ­¤ä¾‹ç¨‹éåŽ†æ‰€æœ‰è„åŒºåŸŸï¼Œå¹¶ç¡®ä¿æ»¡è¶³å­—å…¸ä¸å˜é‡çš„è¦æ±‚ï¼ˆè¯·å‚é˜…æ­¤æ–‡ä»¶å¼€å¤´çš„æ³¨é‡Šï¼‰ã€‚
- * å½“ç„¶ï¼Œå½“æˆ‘ä»¬è¿›è¡Œæ›´æ”¹ä»¥æ¢å¤ä¸å˜é‡æ—¶ï¼Œå¯ä»¥åˆ›å»ºæ–°çš„è„åŒºåŸŸã€‚
+ * µ±ÈÎºÎÇøÓòµÄÉÏ±ßÔµ»òÏÂ±ßÔµ¸ü¸ÄÊ±£¬¸ÃÇøÓò½«±ê¼ÇÎª "dirty"¡£
+ * ´ËÀý³Ì±éÀúËùÓÐÔàÇøÓò£¬²¢È·±£Âú×ã×Öµä²»±äÁ¿µÄÒªÇó£¨Çë²ÎÔÄ´ËÎÄ¼þ¿ªÍ·µÄ×¢ÊÍ£©¡£
+ * µ±È»£¬µ±ÎÒÃÇ½øÐÐ¸ü¸ÄÒÔ»Ö¸´²»±äÁ¿Ê±£¬¿ÉÒÔ´´½¨ÐÂµÄÔàÇøÓò¡£
  */
 LIBTESS_INLINE void Sweep::WalkDirtyRegions(Mesh& mesh, ActiveRegion *regUp)
 {
@@ -1107,8 +1110,8 @@ LIBTESS_INLINE void Sweep::ConnectLeftVertex(Mesh& mesh, Vertex *vEvent)
  * Does everything necessary when the sweep line crosses a vertex.
  * Updates the mesh and the edge dictionary.
  *
- * å½“æ‰«æçº¿ç©¿è¿‡é¡¶ç‚¹æ—¶æ‰§è¡Œæ‰€æœ‰å¿…è¦çš„æ“ä½œã€‚
- * æ›´æ–°æ¨¡åž‹å’Œè¾¹å­—å…¸ã€‚
+ * µ±É¨ÃèÏß´©¹ý¶¥µãÊ±Ö´ÐÐËùÓÐ±ØÒªµÄ²Ù×÷¡£
+ * ¸üÐÂÄ£ÐÍºÍ±ß×Öµä¡£
  */
 LIBTESS_INLINE void Sweep::SweepEvent(Mesh& mesh, Vertex *vEvent)
 {
@@ -1196,23 +1199,24 @@ LIBTESS_INLINE void Sweep::AddSentinel(Mesh& mesh, Float smin, Float smax, Float
  * We maintain an ordering of edge intersections with the sweep line.
  * This order is maintained in a dynamic dictionary.
  */
-// åˆå§‹åŒ–è¯å…¸
+// ³õÊ¼»¯´Êµä
 LIBTESS_INLINE void Sweep::InitEdgeDict(Mesh& mesh, const AABB& aabb)
 {
     Float w, h;
     Float smin, smax, tmin, tmax;
 
-    dict.init(this, (DictKeyComp) EdgeLeq);
+    dict.init(this, (PFN_DICTKEY_COMPARE) EdgeLeq);
 
     /* If the bbox is empty, ensure that sentinels are not coincident by slightly enlarging it. */
-    // åŽŸç‰ˆæ›´æ–°
-//    w = (tess->bmax[0] - tess->bmin[0]) + (Float)0.01;
-//    h = (tess->bmax[1] - tess->bmin[1]) + (Float)0.01;
-//
-//    smin = tess->bmin[0] - w;
-//    smax = tess->bmax[0] + w;
-//    tmin = tess->bmin[1] - h;
-//    tmax = tess->bmax[1] + h;
+    /* Ô­°æ¸üÐÂ
+    w = (tess->bmax[0] - tess->bmin[0]) + (Float)0.01;
+    h = (tess->bmax[1] - tess->bmin[1]) + (Float)0.01;
+
+    smin = tess->bmin[0] - w;
+    smax = tess->bmax[0] + w;
+    tmin = tess->bmin[1] - h;
+    tmax = tess->bmax[1] + h;
+    */
     w = (aabb.amax - aabb.amin) + (Float)0.01;
     h = (aabb.bmax - aabb.bmin) + (Float)0.01;
 
@@ -1225,8 +1229,9 @@ LIBTESS_INLINE void Sweep::InitEdgeDict(Mesh& mesh, const AABB& aabb)
     AddSentinel(mesh, smin, smax, tmax);
 }
 
-// å…³é—­è¯å…¸
-// åˆ é™¤æ‰€æœ‰ ActiveRegion
+/* ¹Ø±Õ´Êµä
+ * É¾³ýËùÓÐ ActiveRegion
+ */
 LIBTESS_INLINE void Sweep::DoneEdgeDict()
 {
     ActiveRegion *reg;
@@ -1338,7 +1343,8 @@ LIBTESS_INLINE int Sweep::InitPriorityQ(Mesh& mesh)
     return LIBTESS_OK;
 }
 
-// æ¸…ç©º
+/* Çå¿Õ
+ */
 LIBTESS_INLINE void Sweep::DonePriorityQ()
 {
     pq.clear();
@@ -1414,7 +1420,7 @@ LIBTESS_INLINE int Sweep::ComputeInterior(Mesh& mesh, const AABB& aabb)
     //while( (v = (Vertex *)pqExtractMin( tess->pq )) != NULL ) {
 
     while ((v = pq.pop()) != NULL) {
-        for (;; ) { // åˆå¹¶ç›¸åŒçš„é¡¶ç‚¹
+        for (;; ) { // ºÏ²¢ÏàÍ¬µÄ¶¥µã
             vNext = pq.top();// (Vertex *)pqMinimum( tess->pq );
             if (vNext == NULL || !VertexEqual(vNext, v)) {
                 break;
@@ -1434,7 +1440,8 @@ LIBTESS_INLINE int Sweep::ComputeInterior(Mesh& mesh, const AABB& aabb)
             * when using boundary extraction (TESS_BOUNDARY_ONLY).
             */
             vNext = pq.pop();// (Vertex *)pqExtractMin( tess->pq );
-            // è¿™ä¸ªå‡½æ•°ä¹‹é—´ï¼Œè¾“å‡ºä¼šé”™è¯¯
+            /* Õâ¸öº¯ÊýÖ®¼ä£¬Êä³ö»á´íÎó
+             */
             LIBTESS_LOG("SpliceMergeVertices : begin");
             LIBTESS_LONGJMP(!mesh.splice(v->edge, vNext->edge));
             LIBTESS_LOG("SpliceMergeVertices : end");

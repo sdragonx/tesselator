@@ -1,4 +1,4 @@
-ï»¿/*
+/*
  * SGI FREE SOFTWARE LICENSE B (Version 2.0, Sept. 18, 2008)
  * Copyright (C) 1991-2000 Silicon Graphics, Inc. All Rights Reserved.
  *
@@ -33,21 +33,23 @@
 */
 
 /*
+// ¸üĞÂÀúÊ·
 
-// æ›´æ–°å†å²
+2021-09-08 11:09:31 header only ÍêÉÆ»¯
+2023-04-27 02:46:47 update
 
-2021-09-08 11:09:31
-header only å®Œå–„åŒ–
+*/
 
-ä¾‹å­ï¼š
-exsample:
+/*
+OpenGL Àı×Ó£º
+exsample :
 
 #define LIBTESS_USE_VEC2
 
 #include <gl/glew.h>
 #include <tesselator/tesselator.hpp>
 
-void draw_elements(int shape, const Vec2* vs, const int* indices, int size)
+void draw_elements(GLenum shape, const Vec2* vs, const int* indices, int size)
 {
     #ifdef LIBTESS_HIGH_PRECISION
     glVertexPointer(2, GL_DOUBLE, sizeof(Vec2), vs);
@@ -63,20 +65,19 @@ libtess::Tesselator tess;
 std::vector<Vec2> points;
 points.push_back(...);      // insert some points
 
-tess.add_contour( points );
+tess.add_contour(points);
 
 // TESS_TRIANGLES:
 
-tess.tesselate( TESS_WINDING_ODD, TESS_TRIANGLES );
-draw_elements( GL_TRIANGLES, &tess.vertices[0], &tess.elements[0], tess.elements.size() );
+tess.tesselate(TESS_WINDING_ODD, TESS_TRIANGLES);
+draw_elements(GL_TRIANGLES, &tess.vertices[0], &tess.elements[0], tess.elements.size());
 
 // TESS_BOUNDARY_CONTOURS:
 
-tess.Tesselate( TESS_WINDING_ODD, TESS_BOUNDARY_CONTOURS );
-draw_elements( GL_LINES, &tess.vertices[0], &tess.elements[0], tess.elements.size() );
+tess.Tesselate(TESS_WINDING_ODD, TESS_BOUNDARY_CONTOURS);
+draw_elements(GL_LINES, &tess.vertices[0], &tess.elements[0], tess.elements.size());
 
 */
-
 #ifndef LIBTESS_TESSELATOR_HPP
 #define LIBTESS_TESSELATOR_HPP
 
@@ -118,36 +119,41 @@ public:
     bool reverseContours; /* AddContour() will treat CCW contours as CW and vice versa */
 
     // outputs
-    #ifdef LIBTESS_USE_VEC3         // è¾“å‡ºçš„é¡¶ç‚¹åˆ—è¡¨
+    #ifdef LIBTESS_USE_VEC3         /* Êä³öµÄ¶¥µãÁĞ±í */
     std::vector<Vec3> vertices;
     #else
     std::vector<Vec2> vertices;
     #endif
-    std::vector<Index>  indices;    // ç´¢å¼•åˆ—è¡¨
-    std::vector<Index>  elements;   // é¡¶ç‚¹ç´¢å¼•åˆ—è¡¨
+    std::vector<Index>  indices;    /* Ë÷ÒıÁĞ±í */
+    std::vector<Index>  elements;   /* ¶¥µãË÷ÒıÁĞ±í */
 
 public:
     Tesselator();
     ~Tesselator();
 
-    // åˆå§‹åŒ–
+    /* ³õÊ¼»¯
+     */
     int init();
 
-    // é‡Šæ”¾
+    /* ÊÍ·Å
+     */
     void dispose();
 
-    // æ·»åŠ ä¸€ä¸ªè½®å»“
+    /* Ìí¼ÓÒ»¸öÂÖÀª
+     */
     int add_contour(int size, const void* pointer, int stride, int count);
 
-    // æ·»åŠ ä¸€ä¸ªè½®å»“
+    /* Ìí¼ÓÒ»¸öÂÖÀª
+     */
     int add_contour(const std::vector<Vec2>& points);
     int add_contour(const std::vector<Vec3>& points);
 
-    // æ‰§è¡Œåˆ‡å‰²ä¸‰è§’å½¢
+    /* Ö´ĞĞÈı½ÇĞÎ·Ö¸î
+     */
     int tesselate(TessWindingRule windingRule, TessElementType elementType, int polySize = 3);
 
 private:
-    // è®¡ç®—normal
+    // ¼ÆËãnormal
     Vec3 ComputeNormal();
     void CheckOrientation();
     void ProjectPolygon();
@@ -178,6 +184,8 @@ LIBTESS_INLINE Tesselator::~Tesselator()
 
 }
 
+/* ³õÊ¼»¯
+ */
 LIBTESS_INLINE int Tesselator::init()
 {
     this->dispose();
@@ -185,6 +193,8 @@ LIBTESS_INLINE int Tesselator::init()
     return 0;
 }
 
+/* ÊÍ·Å
+ */
 LIBTESS_INLINE void Tesselator::dispose()
 {
     mesh.dispose();
@@ -197,16 +207,19 @@ LIBTESS_INLINE void Tesselator::dispose()
     vertexIndexCounter = 0;
 }
 
-// AddContour() - Adds a contour to be tesselated.
-// The type of the vertex coordinates is assumed to be Float.
-// Parameters:
-//   tess    - pointer to tesselator object.
-//   size    - number of coordinates per vertex. Must be 2 or 3.
-//   pointer - pointer to the first coordinate of the first vertex in the array.
-//   stride  - defines offset in bytes between consecutive vertices.
-//   count   - number of vertices in contour.
-// Returns:
-//   LIBTESS_OK if succeed, LIBTESS_ERROR if failed.
+/* AddContour() - Adds a contour to be tesselated.
+ * The type of the vertex coordinates is assumed to be Float.
+ * Parameters:
+ *   tess    - pointer to tesselator object.
+ *   size    - number of coordinates per vertex. Must be 2 or 3.
+ *   pointer - pointer to the first coordinate of the first vertex in the array.
+ *   stride  - defines offset in bytes between consecutive vertices.
+ *   count   - number of vertices in contour.
+ * Returns:
+ *   LIBTESS_OK if succeed, LIBTESS_ERROR if failed.
+ *
+ * Ìí¼ÓÒ»¸öÂÖÀª
+ */
 LIBTESS_INLINE int Tesselator::add_contour(int size, const void* pointer, int stride, int count)
 {
     const unsigned char *src = (const unsigned char*) pointer;
@@ -217,7 +230,8 @@ LIBTESS_INLINE int Tesselator::add_contour(int size, const void* pointer, int st
     if (size > 3)
         size = 3;
 
-    // å¤„ç†é¡¶ç‚¹
+    /* ´¦Àí¶¥µã
+     */
     for (int i = 0; i < count; ++i) {
         const Float* coords = (const Float*) src;
         src += stride;
@@ -275,14 +289,17 @@ LIBTESS_INLINE int Tesselator::add_contour(const std::vector<Vec3>& points)
     return this->add_contour(3, &points[0], sizeof(Vec3), points.size());
 }
 
-// Tesselate() - tesselate contours.
-// Parameters:
-//   tess        - pointer to tesselator object.
-//   windingRule - winding rules used for tesselation, must be one of TessWindingRule.
-//   elementType - defines the tesselation result element type, must be one of TessElementType.
-//   polySize    - defines maximum vertices per polygons if output is polygons.
-// Returns:
-//   LIBTESS_OK if succeed, LIBTESS_ERROR if failed.
+/* Tesselate() - tesselate contours.
+ * Parameters:
+ *   tess        - pointer to tesselator object.
+ *   windingRule - winding rules used for tesselation, must be one of TessWindingRule.
+ *   elementType - defines the tesselation result element type, must be one of TessElementType.
+ *   polySize    - defines maximum vertices per polygons if output is polygons.
+ * Returns:
+ *   LIBTESS_OK if succeed, LIBTESS_ERROR if failed.
+ *
+ * Ö´ĞĞÈı½ÇĞÎ·Ö¸î
+ */
 LIBTESS_INLINE int Tesselator::tesselate(TessWindingRule windingRule, TessElementType elementType, int polySize)
 {
     int errCode;

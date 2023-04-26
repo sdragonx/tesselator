@@ -1,4 +1,4 @@
-﻿/*
+/*
  * SGI FREE SOFTWARE LICENSE B (Version 2.0, Sept. 18, 2008)
  * Copyright (C) 1991-2000 Silicon Graphics, Inc. All Rights Reserved.
  *
@@ -40,12 +40,12 @@
 namespace libtess {
 
 //
-// Dist 排序链表
+// Dist
 //
 
 typedef void *DictKey;
 
-typedef int(*DictKeyComp)(void *frame, DictKey key1, DictKey key2);
+typedef int (*PFN_DICTKEY_COMPARE)(void *frame, DictKey key1, DictKey key2);
 
 struct DictNode
 {
@@ -63,7 +63,7 @@ protected:
     //head.prev == last node
     DictNode head;
     void *frame;
-    DictKeyComp comp;
+    PFN_DICTKEY_COMPARE comp;
 
     pool<DictNode, LIBTESS_PAGE_SIZE> poolbuf;
 
@@ -71,7 +71,7 @@ public:
     Dict();
     ~Dict();
 
-    void init(void *_frame, DictKeyComp pfn);
+    void init(void *_frame, PFN_DICTKEY_COMPARE pfn);
     void dispose();
 
     DictNode* insert(DictNode *node, DictKey key);
@@ -124,7 +124,7 @@ LIBTESS_INLINE Dict::~Dict()
     this->dispose();
 }
 
-LIBTESS_INLINE void Dict::init(void *_frame, DictKeyComp pfn)
+LIBTESS_INLINE void Dict::init(void *_frame, PFN_DICTKEY_COMPARE pfn)
 {
     head.key = NULL;
     head.next = &head;

@@ -1,4 +1,4 @@
-ï»¿/*
+/*
  * SGI FREE SOFTWARE LICENSE B (Version 2.0, Sept. 18, 2008)
  * Copyright (C) 1991-2000 Silicon Graphics, Inc. All Rights Reserved.
  *
@@ -51,7 +51,7 @@ LIBTESS_INLINE Vec3 Tesselator::ComputeNormal()
     minVal = v->coords;
     maxVal = v->coords;
 
-    // å’ŒåŽŸç‰ˆä¸åŒ
+    // ºÍÔ­°æ²»Í¬
     minVert[0] = minVert[1] = minVert[2] = v;
     maxVert[0] = maxVert[1] = maxVert[2] = v;
 
@@ -169,13 +169,13 @@ const Float S_UNIT_Y = (Float)0.0;
 
 /*
  * Determine the polygon normal and project vertices onto the plane of the polygon.
- * ç¡®å®šå¤šè¾¹å½¢æ³•çº¿å¹¶å°†é¡¶ç‚¹æŠ•å½±åˆ°å¤šè¾¹å½¢å¹³é¢ä¸Š
+ * È·¶¨¶à±ßÐÎ·¨Ïß²¢½«¶¥µãÍ¶Ó°µ½¶à±ßÐÎÆ½ÃæÉÏ¡£
  */
 LIBTESS_INLINE void Tesselator::ProjectPolygon()
 {
     Vertex *v, *vHead = &this->mesh.m_vtxHead;
 
-    // æ˜¯å¦è®¡ç®— normal
+    // ÊÇ·ñ¼ÆËã normal
     #ifdef LIBTESS_COMPUTE_NORMAL
 
     Vec3 norm = this->normal;
@@ -190,26 +190,29 @@ LIBTESS_INLINE void Tesselator::ProjectPolygon()
     i = LongAxis(norm);
 
     #if defined(FOR_TRITE_TEST_PROGRAM) || defined(TRUE_PROJECT)
-    // Choose the initial sUnit vector to be approximately perpendicular to the normal.
-    // é€‰æ‹©åˆå§‹ sUnit å‘é‡ï¼Œä½¿å…¶è¿‘ä¼¼åž‚ç›´äºŽæ³•çº¿ã€‚
+    /* Choose the initial sUnit vector to be approximately perpendicular to the normal.
+     * Ñ¡Ôñ³õÊ¼ sUnit ÏòÁ¿£¬Ê¹Æä½üËÆ´¹Ö±ÓÚ·¨Ïß¡£
+     */
     Normalize(norm);
 
     sUnit[i] = 0;
     sUnit[(i + 1) % 3] = S_UNIT_X;
     sUnit[(i + 2) % 3] = S_UNIT_Y;
 
-    // Now make it exactly perpendicular
-    // çŽ°åœ¨è®©å®ƒå®Œå…¨åž‚ç›´
+    /* Now make it exactly perpendicular
+     * ÏÖÔÚÈÃËüÍêÈ«´¹Ö±
+     */
     w = Dot(sUnit, norm);
     sUnit -= w * norm;
     Normalize(sUnit);
 
-    // Choose tUnit so that (sUnit,tUnit,norm) form a right-handed frame
-    // é€‰æ‹©tUnitä»¥å½¢æˆå³æ‰‹æ¡†æž¶(sUnit,tUnit,norm)
+    /* Choose tUnit so that (sUnit, tUnit, norm) form a right-handed frame
+     * Ñ¡Ôñ tUnit ÒÔÐÎ³ÉÓÒÊÖ¿ò¼Ü(sUnit, tUnit, norm)
+     */
     tUnit = cross(norm, sUnit);
     Normalize(tUnit);
     #else
-        /* Project perpendicular to a coordinate axis -- better numerically */
+    /* Project perpendicular to a coordinate axis -- better numerically */
     sUnit[i] = 0;
     sUnit[(i + 1) % 3] = S_UNIT_X;
     sUnit[(i + 2) % 3] = S_UNIT_Y;
@@ -219,12 +222,14 @@ LIBTESS_INLINE void Tesselator::ProjectPolygon()
     tUnit[(i + 2) % 3] = (norm[i] > 0) ? S_UNIT_X : -S_UNIT_X;
     #endif
 
-        // Project the vertices onto the sweep plane
-        // å°†é¡¶ç‚¹æŠ•å½±åˆ°æ‰«æå¹³é¢ä¸Š
+    /* Project the vertices onto the sweep plane
+     * ½«¶¥µãÍ¶Ó°µ½É¨ÃèÆ½ÃæÉÏ
+     */
     for (v = vHead->next; v != vHead; v = v->next) {
         v->s = Dot(v->coords, sUnit);
         v->t = Dot(v->coords, tUnit);
-        // æ›´æ”¹åŽŸç‰ˆæ‰«æçº¿ä¸ºæ¨ªçº¿
+        /* ¸ü¸ÄÔ­°æÉ¨ÃèÏßÎªºáÏß
+         */
         //v->t = Dot( v->coords, sUnit );
         //v->s = Dot( v->coords, tUnit );
     }
@@ -234,7 +239,8 @@ LIBTESS_INLINE void Tesselator::ProjectPolygon()
 
     #else
 
-    // æ›´æ”¹æ‰«æçº¿æ–¹å‘ä¸ºæ¨ªçº¿
+    /* ¸ü¸ÄÉ¨ÃèÏß·½ÏòÎªºáÏß
+     */
     for (v = vHead->next; v != vHead; v = v->next) {
         v->s = v->coords.y;
         v->t = v->coords.x;
