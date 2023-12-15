@@ -33,23 +33,24 @@
 */
 
 /*
-// 更新历史
-
-2021-09-08 11:09:31 header only 完善化
-2023-04-27 02:46:47 update
-
-*/
+ * 更新历史
+ *
+ * 2021-09-08 11:09:31 header only 完善化
+ *
+ * 2023-04-27 02:46:47 update
+ *
+ */
 
 /*
-OpenGL 例子：
-exsample :
+
+OpenGL Exsample:
 
 #define LIBTESS_USE_VEC2
 
 #include <gl/glew.h>
 #include <tesselator/tesselator.hpp>
 
-void draw_elements(GLenum shape, const Vec2* vs, const int* indices, int size)
+void draw_elements(GLenum shape, const Vec2* vs, const GLint* indices, GLsizei size)
 {
     #ifdef LIBTESS_HIGH_PRECISION
     glVertexPointer(2, GL_DOUBLE, sizeof(Vec2), vs);
@@ -141,7 +142,7 @@ public:
 
     /* 添加一个轮廓
      */
-    int add_contour(int size, const void* pointer, int stride, int count);
+    int add_contour(size_t dimension, const void* pointer, size_t stride, size_t count);
 
     /* 添加一个轮廓
      */
@@ -153,7 +154,6 @@ public:
     int tesselate(TessWindingRule windingRule, TessElementType elementType, int polySize = 3);
 
 private:
-    // 计算normal
     Vec3 ComputeNormal();
     void CheckOrientation();
     void ProjectPolygon();
@@ -220,19 +220,19 @@ LIBTESS_INLINE void Tesselator::dispose()
  *
  * 添加一个轮廓
  */
-LIBTESS_INLINE int Tesselator::add_contour(int size, const void* pointer, int stride, int count)
+LIBTESS_INLINE int Tesselator::add_contour(size_t dimension, const void* pointer, size_t stride, size_t count)
 {
     const unsigned char *src = (const unsigned char*) pointer;
     HalfEdge *e = NULL;
 
-    if (size < 2)
-        size = 2;
-    if (size > 3)
-        size = 3;
+    if (dimension < 2)
+        dimension = 2;
+    if (dimension > 3)
+        dimension = 3;
 
     /* 处理顶点
      */
-    for (int i = 0; i < count; ++i) {
+    for (size_t i = 0; i < count; ++i) {
         const Float* coords = (const Float*) src;
         src += stride;
 
@@ -260,7 +260,7 @@ LIBTESS_INLINE int Tesselator::add_contour(int size, const void* pointer, int st
         /* The new vertex is now e->Org. */
         e->vertex->coords.x = coords[0];
         e->vertex->coords.y = coords[1];
-        if (size > 2)
+        if (dimension > 2)
             e->vertex->coords.z = coords[2];
         else
             e->vertex->coords.z = 0;

@@ -538,7 +538,8 @@ LIBTESS_INLINE int Sweep::CheckForRightSplice(Mesh& mesh, ActiveRegion *regUp)
                 LIBTESS_LONGJMP(!mesh.Splice(eLo->mirror->Lnext, eUp));
             }
             else {
-                // 这里有时候会遇到，但不进行任何操作目前也没有任何问题
+                /* 这里有时候会遇到，但不进行任何操作目前也没有任何问题
+                 */
                 //LIBTESS_LONGJMP( !mesh.Splice( eLo->mirror->Lnext, eUp ) );
                 //LIBTESS_LOG("pq.erase( eUp->vertex ) : error.");
             }
@@ -1198,8 +1199,9 @@ LIBTESS_INLINE void Sweep::AddSentinel(Mesh& mesh, Float smin, Float smax, Float
 /*
  * We maintain an ordering of edge intersections with the sweep line.
  * This order is maintained in a dynamic dictionary.
+ *
+ * 初始化词典
  */
-// 初始化词典
 LIBTESS_INLINE void Sweep::InitEdgeDict(Mesh& mesh, const AABB& aabb)
 {
     Float w, h;
@@ -1420,7 +1422,9 @@ LIBTESS_INLINE int Sweep::ComputeInterior(Mesh& mesh, const AABB& aabb)
     //while( (v = (Vertex *)pqExtractMin( tess->pq )) != NULL ) {
 
     while ((v = pq.pop()) != NULL) {
-        for (;; ) { // 合并相同的顶点
+        /* 合并相同的顶点
+         */
+        for (;; ) {
             vNext = pq.top();// (Vertex *)pqMinimum( tess->pq );
             if (vNext == NULL || !VertexEqual(vNext, v)) {
                 break;

@@ -51,7 +51,8 @@ LIBTESS_INLINE Vec3 Tesselator::ComputeNormal()
     minVal = v->coords;
     maxVal = v->coords;
 
-    // 和原版不同
+    /* 和原版不同
+     */
     minVert[0] = minVert[1] = minVert[2] = v;
     maxVert[0] = maxVert[1] = maxVert[2] = v;
 
@@ -175,7 +176,8 @@ LIBTESS_INLINE void Tesselator::ProjectPolygon()
 {
     Vertex *v, *vHead = &this->mesh.m_vtxHead;
 
-    // 是否计算 normal
+    /* 是否计算 normal
+     */
     #ifdef LIBTESS_COMPUTE_NORMAL
 
     Vec3 norm = this->normal;

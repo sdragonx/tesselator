@@ -151,8 +151,9 @@ LIBTESS_STATIC int TessellateInterior(Mesh *mesh)
 
     /*LINTED*/
     for (f = mesh->m_faceHead.next; f != &mesh->m_faceHead; f = next) {
-        /* Make sure we don''t try to tessellate the new triangles. */
-        // 确保我们不尝试对新的三角形进行镶嵌
+        /* Make sure we don''t try to tessellate the new triangles.
+         * 确保我们不尝试对新的三角形进行镶嵌
+         */
         next = f->next;
         if (f->inside) {
             if (TessellateMonoRegion(mesh, f) != LIBTESS_OK) {
